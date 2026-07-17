@@ -84,6 +84,11 @@ This index organizes the repository by responder task rather than file location.
 - [Code of Conduct](../CODE_OF_CONDUCT.md)
 - [Main README](../README.md)
 
+
+## Framework alignment
+
+- [Framework mapping guide](framework-mapping.md) — MITRE ATT&CK, NIST CSF 2.0 / SP 800-61r3, and AWS Well-Architected cross-reference.
+
 ## Visual documentation
 
 - [Diagram source catalog](../diagrams/README.md)

@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-07-17
+
+### Added
+
+- Framework alignment sections in all 20 scenario runbooks.
+- Central MITRE ATT&CK, NIST CSF 2.0 / SP 800-61r3, and AWS Well-Architected mapping guide.
+- Repository-wide pull request template with validation and safety checks.
+- Versioned release notes for v1.3.0.
+
+### Changed
+
+- Expanded README and documentation-index navigation for framework mappings.
+- Clarified that ATT&CK mappings represent plausible technique context and require evidence confirmation.
+
+## [1.2.0] — 2026-07-17
+
 ### Added
 
 - Incident snapshot tables for all 20 scenario runbooks.

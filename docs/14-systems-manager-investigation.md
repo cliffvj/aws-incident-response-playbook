@@ -21,6 +21,17 @@ Use this runbook only with authorized access and an assigned incident identifier
 > [!NOTE]
 > Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
 
+## Framework alignment
+
+| Framework | Alignment |
+|---|---|
+| MITRE ATT&CK | `T1021` — Remote Services<br>`T1059` — Command and Scripting Interpreter<br>`T1078` — Valid Accounts |
+| NIST CSF 2.0 / SP 800-61r3 | **Detect**, **Respond** |
+| AWS Well-Architected Security Pillar | `SEC10-BP03` — Prepare forensic capabilities<br>`SEC10-BP05` — Pre-provision access<br>`SEC10-BP06` — Pre-deploy tools |
+
+> [!NOTE]
+> ATT&CK entries describe plausible adversary behavior relevant to this scenario; they do not assert that every technique occurred. Confirm mappings from evidence. NIST and AWS entries describe response-program alignment, not compliance certification. See the [framework mapping guide](framework-mapping.md).
+
 ## Response flow
 
 ```mermaid
