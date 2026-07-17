@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the IAM identity confirmed unauthorized? | Disable access and remove attached permissions before deletion. | Preserve and investigate without destructive action. |
+| Did the identity create keys, roles, policies, or trust relationships? | Expand eradication to all persistence artifacts. | Continue focused cleanup. |
+| Is the identity referenced by workloads or automation? | Separate legitimate dependencies before deletion. | Proceed with removal after evidence capture. |
+
 ## Runbook
 
 1. Use CloudTrail to establish who created or modified the suspicious user, group, role, policy, login profile, MFA device, or access key.
@@ -104,6 +115,10 @@ AWS Identity and Access Management, AWS CloudTrail, Amazon Athena
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

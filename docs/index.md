@@ -85,6 +85,13 @@ This index organizes the repository by responder task rather than file location.
 - [Main README](../README.md)
 
 
+
+## Decision intelligence
+
+- [Incident-response decision guide](decision-trees.md) — cross-scenario triage, evidence, containment, identity, automation, recovery, and closure gates.
+- [Incident severity matrix](incident-severity-matrix.md) — default severity and escalation criteria.
+- [Initial triage checklist](initial-triage-checklist.md) — first-response actions and evidence requirements.
+
 ## Framework alignment
 
 - [Framework mapping guide](framework-mapping.md) — MITRE ATT&CK, NIST CSF 2.0 / SP 800-61r3, and AWS Well-Architected cross-reference.

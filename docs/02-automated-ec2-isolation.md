@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the signal high-confidence and uniquely identifies the resource? | Permit automated quarantine within the approved guardrails. | Require analyst validation before any write action. |
+| Could isolation break critical dependencies? | Route to approval or a reduced-impact containment branch. | Continue with the standard isolation path. |
+| Did the automation verify account, Region, tags, and allowlists? | Continue and record every state transition. | Fail closed and notify responders. |
+
 ## Runbook
 
 1. Define the triggering event and required identifiers such as instance ID, finding ID, account, and Region.
@@ -104,6 +115,10 @@ Amazon CloudWatch, Amazon SNS, AWS Lambda, AWS Step Functions, Amazon EC2, Amazo
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the API activity authorized? | Document owner, change record, and expected scope. | Contain the principal and determine blast radius. |
+| Is the principal a user, role session, service, or root? | Choose credential-specific containment. | Resolve attribution before broad revocation. |
+| Did the actor create persistence or alter logging? | Expand investigation to IAM, Lambda, EventBridge, CloudTrail, and resource policies. | Continue event-focused remediation. |
+
 ## Runbook
 
 1. Capture eventName, eventSource, eventTime, awsRegion, sourceIPAddress, userAgent, requestParameters, resources, and userIdentity.
@@ -104,6 +115,10 @@ AWS CloudTrail, Amazon Athena, AWS Identity and Access Management, Amazon SNS
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

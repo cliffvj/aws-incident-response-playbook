@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the noncompliance a true violation or an approved exception? | Remediate or route through the exception process. | Record evidence and close the finding. |
+| Is automatic remediation deterministic and reversible? | Allow controlled automation with logging. | Require human approval. |
+| Could remediation affect production availability? | Schedule or approve the change with the owner. | Proceed within the standard response window. |
+
 ## Runbook
 
 1. Define required tags such as CostCenter, Department, Application, Owner, Environment, and DataClassification.
@@ -104,6 +115,10 @@ AWS Config, Amazon CloudWatch, Amazon SNS, AWS Lambda, Amazon EC2
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is active compromise or exfiltration confirmed? | Escalate severity and isolate immediately. | Preserve state and continue scoped investigation. |
+| Is the instance managed by Auto Scaling? | Validate the launch template, AMI, user data, and replacement behavior before termination. | Proceed with standalone workload containment. |
+| Is volatile evidence required? | Capture it with an approved method before stop or reboot. | Continue with storage snapshots and telemetry preservation. |
+
 ## Runbook
 
 1. Confirm the instance ID, account, Region, business owner, severity, and whether the instance is managed by Auto Scaling.
@@ -106,6 +117,10 @@ Amazon EC2, Amazon VPC, AWS CloudTrail, Amazon CloudWatch, AWS Systems Manager
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

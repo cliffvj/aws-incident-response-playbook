@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the access key or session still active? | Disable or revoke it using the least disruptive effective control. | Preserve evidence and investigate historical use. |
+| Is the identity human, workload, or federated? | Apply the containment method appropriate to that credential type. | Pause and resolve attribution before broad changes. |
+| Did the principal assume other roles or create persistence? | Expand scope to every derived session, role, policy, and credential. | Continue with focused remediation. |
+
 ## Runbook
 
 1. Identify the principal, access key ID or role session, first/last observed activity, source IPs, user agents, and affected Regions.
@@ -104,6 +115,10 @@ AWS Identity and Access Management, AWS CloudTrail, Amazon Athena, Amazon SNS
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

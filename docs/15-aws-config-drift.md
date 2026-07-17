@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the drift unauthorized, risky, or merely expected change? | Remediate unauthorized/risky drift; document approved change. | Close with evidence. |
+| Is the desired state unambiguous? | Restore the approved baseline. | Escalate to the resource owner before changing configuration. |
+| Can AWS Config remediation safely converge repeatedly? | Use idempotent automation. | Require manual remediation and validation. |
+
 ## Runbook
 
 1. Identify the noncompliant resource, rule, configuration item, change timestamp, and related CloudTrail event.
@@ -104,6 +115,10 @@ AWS Config, Amazon SNS, AWS Lambda, AWS Systems Manager
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

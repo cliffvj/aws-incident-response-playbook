@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-07-17
+
+### Added
+
+- Decision checkpoints tailored to all 20 incident-response runbooks.
+- Central decision guide for severity, evidence preservation, containment selection, identity response, trusted recovery, automation approval, and closure.
+- Mermaid decision paths for incident entry, evidence-before-action, identity containment, and recovery trust validation.
+- Versioned release notes for v1.4.0.
+
+### Changed
+
+- Expanded README and documentation-index navigation for decision support.
+- Added cross-scenario decision-support links to every runbook.
+
 ## [1.3.0] — 2026-07-17
 
 ### Added

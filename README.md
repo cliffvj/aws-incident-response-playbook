@@ -5,7 +5,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-Markdown-000000?logo=markdown)](docs/index.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Release](https://img.shields.io/badge/release-v1.3.0-blue.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v1.4.0-blue.svg)](CHANGELOG.md)
 
 Production-inspired AWS incident-response runbooks for study, tabletop exercises, authorized labs, and adaptation to organizational procedures. The repository emphasizes the services and objectives associated with **AWS Incident Response Demonstrated**, while applying broader security-engineering practices for evidence preservation, containment, eradication, and secure recovery.
 
@@ -34,6 +34,7 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 | Preserve evidence | [Evidence collection checklist](docs/evidence-collection-checklist.md) |
 | Match a problem to AWS services | [Service mapping](docs/service-mapping.md) |
 | Map scenarios to ATT&CK, NIST, and AWS guidance | [Framework mapping guide](docs/framework-mapping.md) |
+| Choose containment, evidence, escalation, and recovery paths | [Incident-response decision guide](docs/decision-trees.md) |
 | Investigate CloudTrail at scale | [Athena query library](queries/cloudtrail-athena.sql) |
 | Use AWS CLI during response | [AWS CLI incident-response reference](cheat-sheets/aws-cli-incident-response.md) |
 | View planned enhancements | [Project roadmap](ROADMAP.md) |
@@ -134,7 +135,7 @@ aws-incident-response-playbook/
 ## Project status
 
 - **Phase 1 — Foundation:** complete
-- **Phase 2 — Documentation professionalization:** in progress (visual flows and framework mappings complete)
+- **Phase 2 — Documentation professionalization:** in progress (visual flows, framework mappings, and decision intelligence complete)
 - **Phase 3 — Response automation:** planned
 - **Phase 4 — Deployable labs:** planned
 

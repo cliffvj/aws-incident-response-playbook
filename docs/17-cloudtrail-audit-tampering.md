@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is CloudTrail disabled, altered, or failing delivery? | Restore protected logging and preserve evidence of tampering. | Validate integrity, coverage, and retention. |
+| Are organization or multi-Region trails available? | Use them to reconstruct missing activity. | Escalate confidence limitations and seek alternate telemetry. |
+| Was the trail bucket, KMS key, or policy modified? | Remediate the complete logging path. | Continue validation and alerting review. |
+
 ## Runbook
 
 1. Check trail status, multi-Region settings, organization scope, management/data events, log file validation, encryption, and destinations.
@@ -104,6 +115,10 @@ AWS CloudTrail, Amazon S3, Amazon CloudWatch, AWS Config, Amazon SNS
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 
