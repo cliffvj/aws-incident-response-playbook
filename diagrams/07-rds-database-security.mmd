@@ -1,0 +1,14 @@
+flowchart TD
+    A["Database risk detected"]
+    B["Validate endpoint and dependencies"]
+    C["Preserve configuration and logs"]
+    D["Remove public exposure"]
+    E["Restrict security group access"]
+    F["Rotate credentials and harden"]
+    G["Test recovery and monitoring"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

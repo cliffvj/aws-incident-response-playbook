@@ -1,0 +1,14 @@
+flowchart TD
+    A["Validated incident signal"]
+    B["Start state machine"]
+    C["Enrich and classify"]
+    D["Contain affected resource"]
+    E["Preserve evidence"]
+    F["Pause for approval where required"]
+    G["Recover, notify, and record"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

@@ -6,6 +6,40 @@
 
 Use this runbook only with authorized access and an assigned incident identifier. Preserve evidence before destructive changes. Commands are examples: verify the account, Region, resource identifiers, dependencies, and rollback path before execution.
 
+
+## Incident snapshot
+
+| Item | Value |
+|---|---|
+| Default severity | **High** — adjust using the [severity matrix](incident-severity-matrix.md) |
+| Primary impact | Amazon S3 data |
+| Response objective | Remove exposure and investigate access |
+| AWS services | Amazon S3, AWS CloudTrail, Amazon Athena, AWS Config, Amazon SNS |
+| Automation role | Optional |
+| Typical execution window | 10–30 minutes; actual duration depends on scope and approvals |
+
+> [!NOTE]
+> Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
+
+## Response flow
+
+```mermaid
+flowchart TD
+    A["Exposure detected"]
+    B["Validate public access path"]
+    C["Preserve policy and access evidence"]
+    D["Enable public-access protections"]
+    E["Remove unintended policy or ACL"]
+    F["Assess object access"]
+    G["Validate continuous controls"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
 ## Severity guidance
 
 - **Critical:** confirmed active compromise, root/administrator takeover, or ongoing sensitive-data loss.
@@ -68,3 +102,7 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 - [AWS Well-Architected Security Pillar — Incident response](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/incident-response.html)
 - [AWS Prescriptive Guidance — Incident response recommendations](https://docs.aws.amazon.com/prescriptive-guidance/latest/security-controls-by-caf-capability/incident-response-recommendations.html)
 
+
+---
+
+[Documentation index](index.md) · [Previous scenario](04-data-exfiltration.md) · [Next scenario](06-compliance-enforcement.md)

@@ -1,0 +1,9 @@
+flowchart LR
+    A[CloudWatch alarm or validated event] --> B[SNS topic]
+    B --> C[Lambda validator]
+    C --> D{Authorized target?}
+    D -- No --> E[Notify responder and stop]
+    D -- Yes --> F[Step Functions workflow]
+    F --> G[Apply quarantine control]
+    G --> H[Preserve evidence]
+    H --> I[Notify and record]

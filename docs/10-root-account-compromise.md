@@ -6,6 +6,40 @@
 
 Use this runbook only with authorized access and an assigned incident identifier. Preserve evidence before destructive changes. Commands are examples: verify the account, Region, resource identifiers, dependencies, and rollback path before execution.
 
+
+## Incident snapshot
+
+| Item | Value |
+|---|---|
+| Default severity | **Critical** — adjust using the [severity matrix](incident-severity-matrix.md) |
+| Primary impact | AWS account |
+| Response objective | Regain control of root identity |
+| AWS services | AWS IAM, AWS CloudTrail, Amazon SNS, AWS Support |
+| Automation role | Manual |
+| Typical execution window | 30–120 minutes; actual duration depends on scope and approvals |
+
+> [!NOTE]
+> Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
+
+## Response flow
+
+```mermaid
+flowchart TD
+    A["Root activity alert"]
+    B["Confirm ownership and access"]
+    C["Engage leadership and AWS Support"]
+    D["Secure root email and password"]
+    E["Remove root access keys and enforce MFA"]
+    F["Review account changes and billing"]
+    G["Validate recovery controls"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
 ## Severity guidance
 
 - **Critical:** confirmed active compromise, root/administrator takeover, or ongoing sensitive-data loss.
@@ -67,3 +101,7 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 - [AWS Well-Architected Security Pillar — Incident response](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/incident-response.html)
 - [AWS Prescriptive Guidance — Incident response recommendations](https://docs.aws.amazon.com/prescriptive-guidance/latest/security-controls-by-caf-capability/incident-response-recommendations.html)
 
+
+---
+
+[Documentation index](index.md) · [Previous scenario](09-malicious-lambda-scheduled-persistence.md) · [Next scenario](11-auto-scaling-recovery.md)

@@ -1,0 +1,8 @@
+flowchart TD
+    A[Compromised workload] --> B[Contain and preserve]
+    B --> C{Trusted launch source verified?}
+    C -- No --> D[Correct AMI, template, user data, roles, and secrets]
+    D --> C
+    C -- Yes --> E[Launch clean replacement]
+    E --> F[Validate controls and application health]
+    F --> G[Return to service with heightened monitoring]

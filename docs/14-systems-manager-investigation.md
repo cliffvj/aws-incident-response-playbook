@@ -6,6 +6,40 @@
 
 Use this runbook only with authorized access and an assigned incident identifier. Preserve evidence before destructive changes. Commands are examples: verify the account, Region, resource identifiers, dependencies, and rollback path before execution.
 
+
+## Incident snapshot
+
+| Item | Value |
+|---|---|
+| Default severity | **High** — adjust using the [severity matrix](incident-severity-matrix.md) |
+| Primary impact | Managed compute |
+| Response objective | Investigate without opening SSH or RDP |
+| AWS services | AWS Systems Manager, Amazon EC2, AWS IAM, Amazon CloudWatch Logs, Amazon S3 |
+| Automation role | Optional |
+| Typical execution window | 20–60 minutes; actual duration depends on scope and approvals |
+
+> [!NOTE]
+> Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
+
+## Response flow
+
+```mermaid
+flowchart TD
+    A["Host investigation required"]
+    B["Verify managed-node status"]
+    C["Authorize responder session"]
+    D["Collect volatile and host artifacts"]
+    E["Store output in evidence location"]
+    F["Contain or remediate as approved"]
+    G["Close session and review logs"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
 ## Severity guidance
 
 - **Critical:** confirmed active compromise, root/administrator takeover, or ongoing sensitive-data loss.
@@ -67,3 +101,7 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 - [AWS Well-Architected Security Pillar — Incident response](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/incident-response.html)
 - [AWS Prescriptive Guidance — Incident response recommendations](https://docs.aws.amazon.com/prescriptive-guidance/latest/security-controls-by-caf-capability/incident-response-recommendations.html)
 
+
+---
+
+[Documentation index](index.md) · [Previous scenario](13-athena-cloudtrail-investigation.md) · [Next scenario](15-aws-config-drift.md)

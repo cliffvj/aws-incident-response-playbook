@@ -1,0 +1,14 @@
+flowchart TD
+    A["Resource change or scheduled evaluation"]
+    B["Evaluate AWS Config rule"]
+    C["Classify compliant or noncompliant"]
+    D["Notify owner"]
+    E["Run approved remediation"]
+    F["Re-evaluate resource"]
+    G["Record exception or closure"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

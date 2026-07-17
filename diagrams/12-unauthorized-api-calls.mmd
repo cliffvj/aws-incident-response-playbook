@@ -1,0 +1,14 @@
+flowchart TD
+    A["Suspicious API event"]
+    B["Identify principal and source"]
+    C["Build UTC timeline"]
+    D["Determine affected resources"]
+    E["Restrict principal or session"]
+    F["Reverse unauthorized changes"]
+    G["Validate logging and alerts"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

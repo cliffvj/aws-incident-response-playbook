@@ -1,0 +1,14 @@
+flowchart TD
+    A["Host investigation required"]
+    B["Verify managed-node status"]
+    C["Authorize responder session"]
+    D["Collect volatile and host artifacts"]
+    E["Store output in evidence location"]
+    F["Contain or remediate as approved"]
+    G["Close session and review logs"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

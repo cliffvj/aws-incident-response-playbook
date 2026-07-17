@@ -1,0 +1,14 @@
+flowchart TD
+    A["Unknown identity detected"]
+    B["Verify authorization status"]
+    C["Preserve user, policy, and key state"]
+    D["Disable sessions and credentials"]
+    E["Remove policies and trust paths"]
+    F["Search for related persistence"]
+    G["Validate account access"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

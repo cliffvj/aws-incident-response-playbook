@@ -1,0 +1,14 @@
+flowchart TD
+    A["Configuration change"]
+    B["Evaluate against rule"]
+    C["Compare current and approved state"]
+    D["Confirm exception status"]
+    E["Run approved remediation"]
+    F["Re-evaluate compliance"]
+    G["Record owner and cause"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

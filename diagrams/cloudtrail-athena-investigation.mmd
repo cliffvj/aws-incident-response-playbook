@@ -1,0 +1,7 @@
+flowchart LR
+    A[CloudTrail] --> B[S3 log archive]
+    B --> C[Glue Data Catalog]
+    C --> D[Athena scoped query]
+    D --> E[Correlate principal, source, and resources]
+    E --> F[Export approved evidence]
+    F --> G[Incident timeline]

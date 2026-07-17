@@ -6,6 +6,40 @@
 
 Use this runbook only with authorized access and an assigned incident identifier. Preserve evidence before destructive changes. Commands are examples: verify the account, Region, resource identifiers, dependencies, and rollback path before execution.
 
+
+## Incident snapshot
+
+| Item | Value |
+|---|---|
+| Default severity | **High** — adjust using the [severity matrix](incident-severity-matrix.md) |
+| Primary impact | EC2 response automation |
+| Response objective | Controlled automated quarantine |
+| AWS services | Amazon CloudWatch, Amazon SNS, AWS Lambda, AWS Step Functions, Amazon EC2 |
+| Automation role | Primary |
+| Typical execution window | 20–45 minutes; actual duration depends on scope and approvals |
+
+> [!NOTE]
+> Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
+
+## Response flow
+
+```mermaid
+flowchart TD
+    A["Detection signal"]
+    B["Validate finding and instance"]
+    C["Invoke response workflow"]
+    D["Apply quarantine security group"]
+    E["Snapshot and notify"]
+    F["Request approval if required"]
+    G["Record outcome"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
 ## Severity guidance
 
 - **Critical:** confirmed active compromise, root/administrator takeover, or ongoing sensitive-data loss.
@@ -67,3 +101,7 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 - [AWS Well-Architected Security Pillar — Incident response](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/incident-response.html)
 - [AWS Prescriptive Guidance — Incident response recommendations](https://docs.aws.amazon.com/prescriptive-guidance/latest/security-controls-by-caf-capability/incident-response-recommendations.html)
 
+
+---
+
+[Documentation index](index.md) · [Previous scenario](01-ec2-instance-compromise.md) · [Next scenario](03-iam-credential-compromise.md)
