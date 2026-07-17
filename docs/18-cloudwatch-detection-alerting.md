@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the alarm actionable and mapped to an owner/runbook? | Triage and execute the linked response. | Tune the signal before enabling automation. |
+| Is the alert a symptom or direct indicator of compromise? | Correlate with CloudTrail, logs, and network evidence. | Handle as reliability or compliance telemetry. |
+| Would automatic response be safe and reversible? | Use guarded automation with notification. | Require analyst approval. |
+
 ## Runbook
 
 1. Define the signal, threshold, evaluation period, missing-data behavior, dimensions, and expected baseline.
@@ -104,6 +115,10 @@ Amazon CloudWatch, Amazon SNS, AWS Lambda, AWS Step Functions
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

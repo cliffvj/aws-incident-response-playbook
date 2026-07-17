@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the database publicly reachable or broadly trusted? | Restrict access immediately while preserving application connectivity. | Continue with encryption, logging, backup, and identity review. |
+| Is active compromise suspected? | Treat as an incident, preserve logs/snapshots, and rotate exposed secrets. | Treat as hardening or compliance remediation. |
+| Can the database be rebuilt or restored from a trusted point? | Plan validated recovery and cutover. | Use in-place remediation with additional monitoring. |
+
 ## Runbook
 
 1. Record engine, endpoint, subnet group, public accessibility, security groups, parameter groups, encryption, backups, logs, and deletion protection.
@@ -104,6 +115,10 @@ Amazon RDS, Amazon VPC, AWS Identity and Access Management, Amazon CloudWatch, A
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

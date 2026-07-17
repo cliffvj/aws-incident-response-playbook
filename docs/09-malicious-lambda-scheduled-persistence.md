@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the function or schedule actively executing? | Disable the trigger or reserved concurrency first. | Preserve configuration and invocation evidence. |
+| Is the code package required as evidence? | Export and hash it before deletion. | Continue with configuration preservation. |
+| Were roles, layers, destinations, or environment variables modified? | Investigate and remediate all connected persistence paths. | Proceed with focused eradication. |
+
 ## Runbook
 
 1. Capture the Lambda code package, versions, aliases, environment variables, layers, execution role, resource policy, triggers, destinations, and tags.
@@ -104,6 +115,10 @@ AWS Lambda, Amazon CloudWatch, AWS CloudTrail, AWS Identity and Access Managemen
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

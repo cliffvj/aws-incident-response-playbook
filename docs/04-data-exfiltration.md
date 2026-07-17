@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is data transfer still occurring? | Block the narrowest egress, identity, endpoint, or resource path that stops it. | Preserve logs and validate whether the event has ended. |
+| Is the destination known and malicious or unauthorized? | Block it and search for other resources communicating with it. | Continue attribution before broad network blocking. |
+| Could containment destroy evidence or interrupt a safety-critical service? | Use an approved alternate containment plan. | Proceed with standard controls. |
+
 ## Runbook
 
 1. Determine the data source, destination, protocol, principal, volume, time window, and whether exfiltration is ongoing.
@@ -104,6 +115,10 @@ Amazon VPC, Amazon EC2, Amazon S3, AWS Identity and Access Management, AWS Cloud
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

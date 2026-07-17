@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the query scope constrained by time, account, and Region? | Run and preserve results. | Narrow the query before execution. |
+| Are the required CloudTrail event types present in S3? | Proceed with analysis. | Identify missing trails, data events, partitions, or delivery gaps. |
+| Do results indicate additional identities or resources? | Pivot and expand the investigation iteratively. | Document negative findings and confidence limits. |
+
 ## Runbook
 
 1. Confirm CloudTrail logs are delivered to the correct S3 prefix and determine account, Region, and date partitions.
@@ -104,6 +115,10 @@ Amazon Athena, AWS CloudTrail, Amazon S3
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

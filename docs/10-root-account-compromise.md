@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Can the account owner still authenticate securely? | Secure root credentials, MFA, contacts, and payment settings immediately. | Escalate to AWS Support and organizational leadership. |
+| Are root access keys present or recently used? | Delete or disable them after preserving evidence. | Continue reviewing root events and account changes. |
+| Were support plans, contacts, domains, or billing details changed? | Restore validated ownership information and monitor for recurrence. | Proceed with normal recovery validation. |
+
 ## Runbook
 
 1. Use a known-clean device and trusted network to change the root password and verify the registered email and contact information.
@@ -104,6 +115,10 @@ AWS Identity and Access Management, AWS CloudTrail, Amazon SNS
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

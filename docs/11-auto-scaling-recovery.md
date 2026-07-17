@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is the launch source trusted? | Replace capacity only after validating AMI, template, user data, dependencies, and secrets. | Stop automated replacement and remediate the source first. |
+| Can traffic be shifted safely? | Use staged replacement and health validation. | Coordinate a maintenance or disaster-recovery path. |
+| Did replacement instances remain clean under monitoring? | Complete cutover and retire affected capacity. | Re-isolate and reopen root-cause analysis. |
+
 ## Runbook
 
 1. Identify the Auto Scaling group, launch template/configuration version, AMI, user data, instance profile, target groups, and scaling policies.
@@ -104,6 +115,10 @@ Amazon EC2 Auto Scaling, Amazon EC2, Amazon VPC, Amazon CloudWatch
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

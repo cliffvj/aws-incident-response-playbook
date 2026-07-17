@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is a snapshot sufficient for the evidence objective? | Create, tag, encrypt, restrict, and document it. | Use approved memory or live-response collection as well. |
+| Can the source volume change during capture? | Quiesce or stop it if authorized and operationally safe. | Record consistency limitations. |
+| Has custody and access control been established? | Transfer to the forensic account or vault as approved. | Do not proceed without an evidence-handling owner. |
+
 ## Runbook
 
 1. Record instance and volume metadata, attachment mappings, encryption keys, timestamps, tags, and incident ID.
@@ -104,6 +115,10 @@ Amazon EC2, Amazon EBS, AWS Identity and Access Management, AWS CloudTrail
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

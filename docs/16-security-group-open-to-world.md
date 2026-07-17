@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Does the rule expose a sensitive port or service to 0.0.0.0/0 or ::/0? | Restrict immediately to approved sources or security groups. | Evaluate business intent and effective reachability. |
+| Is the rule shared by multiple workloads? | Assess dependencies before editing or replace associations safely. | Apply the targeted rule change. |
+| Is there evidence of exploitation? | Escalate to compromise investigation and preserve logs. | Treat as exposure remediation and monitor. |
+
 ## Runbook
 
 1. Identify every attached ENI and resource using the security group before changing it.
@@ -105,6 +116,10 @@ Amazon VPC, Amazon EC2, AWS Config, AWS CloudTrail
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

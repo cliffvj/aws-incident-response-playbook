@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Are all automated actions bounded, idempotent, and auditable? | Enable the workflow with explicit failure handling. | Keep the step manual until controls exist. |
+| Does the workflow contain destructive or high-impact steps? | Insert human approval and rollback branches. | Continue automated execution. |
+| Did every step verify postconditions? | Close or advance the state machine. | Stop, notify, and route to manual recovery. |
+
 ## Runbook
 
 1. Define the workflow input contract, incident ID, resource identifiers, account, Region, severity, and requested actions.
@@ -104,6 +115,10 @@ AWS Step Functions, AWS Lambda, Amazon SNS, Amazon EC2, AWS Systems Manager
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 

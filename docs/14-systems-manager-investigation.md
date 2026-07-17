@@ -64,6 +64,17 @@ flowchart TD
 - Resource identifiers, tags, owners, dependencies, and screenshots/exports required by policy
 - Every containment/remediation action and its result
 
+## Decision checkpoints
+
+> [!IMPORTANT]
+> Use these checkpoints to choose the safest next action. When evidence is incomplete, prefer preservation, narrow containment, and explicit approval over destructive remediation.
+
+| Question | If yes | If no |
+|---|---|---|
+| Is Systems Manager access authorized and logged? | Use Session Manager or Run Command with evidence capture. | Do not open alternate access solely for convenience. |
+| Could a command alter evidence? | Use read-only collection or an approved forensic workflow. | Execute the documented command and save output. |
+| Is the SSM agent or instance profile potentially compromised? | Validate control-plane trust before relying on results. | Continue with controlled investigation. |
+
 ## Runbook
 
 1. Confirm the instance is managed by Systems Manager and record the agent status, instance profile, platform, and connectivity path.
@@ -104,6 +115,10 @@ AWS Systems Manager, Amazon EC2, Amazon CloudWatch, AWS Identity and Access Mana
 ## Exam cues
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
+
+## Decision support
+
+Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
 ## Authoritative references
 
