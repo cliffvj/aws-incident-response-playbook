@@ -6,6 +6,40 @@
 
 Use this runbook only with authorized access and an assigned incident identifier. Preserve evidence before destructive changes. Commands are examples: verify the account, Region, resource identifiers, dependencies, and rollback path before execution.
 
+
+## Incident snapshot
+
+| Item | Value |
+|---|---|
+| Default severity | **Medium** — adjust using the [severity matrix](incident-severity-matrix.md) |
+| Primary impact | Monitoring and detection |
+| Response objective | Turn telemetry into actionable signals |
+| AWS services | Amazon CloudWatch, Amazon SNS, AWS Lambda, AWS Systems Manager |
+| Automation role | Primary |
+| Typical execution window | 20–45 minutes; actual duration depends on scope and approvals |
+
+> [!NOTE]
+> Severity and timing are planning defaults, not substitutes for business-impact assessment, legal guidance, or the incident commander’s decision.
+
+## Response flow
+
+```mermaid
+flowchart TD
+    A["Metric or log signal"]
+    B["Evaluate threshold and context"]
+    C["Enrich with resource metadata"]
+    D["Notify response channel"]
+    E["Invoke approved action"]
+    F["Track acknowledgement"]
+    G["Tune and validate alarm"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
 ## Severity guidance
 
 - **Critical:** confirmed active compromise, root/administrator takeover, or ongoing sensitive-data loss.
@@ -67,3 +101,7 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 - [AWS Well-Architected Security Pillar — Incident response](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/incident-response.html)
 - [AWS Prescriptive Guidance — Incident response recommendations](https://docs.aws.amazon.com/prescriptive-guidance/latest/security-controls-by-caf-capability/incident-response-recommendations.html)
 
+
+---
+
+[Documentation index](index.md) · [Previous scenario](17-cloudtrail-audit-tampering.md) · [Next scenario](19-ebs-snapshot-forensic-preservation.md)

@@ -83,3 +83,13 @@ This index organizes the repository by responder task rather than file location.
 - [Security policy](../SECURITY.md)
 - [Code of Conduct](../CODE_OF_CONDUCT.md)
 - [Main README](../README.md)
+
+## Visual documentation
+
+- [Diagram source catalog](../diagrams/README.md)
+- [Incident-response lifecycle](../diagrams/incident-response-lifecycle.mmd)
+- [Automated containment reference](../diagrams/automated-containment-reference.mmd)
+- [CloudTrail and Athena investigation](../diagrams/cloudtrail-athena-investigation.mmd)
+- [Trusted recovery boundary](../diagrams/recovery-trust-boundary.mmd)
+
+Each numbered runbook now includes an incident snapshot and a GitHub-rendered Mermaid response flow.

@@ -6,12 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Planned
+### Added
 
-- Mermaid workflow diagrams for all 20 scenario runbooks.
-- MITRE ATT&CK, NIST, and AWS Well-Architected mappings.
-- Scenario-specific decision trees.
-- Improved runbook cross-linking and authoritative references.
+- Incident snapshot tables for all 20 scenario runbooks.
+- GitHub-rendered Mermaid response flows for every scenario.
+- Reusable Mermaid source files under `diagrams/`.
+- Visual-documentation catalog and architecture-level diagrams.
+- Previous, next, and index navigation links in each scenario runbook.
+
+### Changed
+
+- Improved README navigation and lab-safety guidance.
+- Expanded the documentation index with visual resources.
 
 ## [1.1.0] — 2026-07-17
 

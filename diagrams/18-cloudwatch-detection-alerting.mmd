@@ -1,0 +1,14 @@
+flowchart TD
+    A["Metric or log signal"]
+    B["Evaluate threshold and context"]
+    C["Enrich with resource metadata"]
+    D["Notify response channel"]
+    E["Invoke approved action"]
+    F["Track acknowledgement"]
+    G["Tune and validate alarm"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

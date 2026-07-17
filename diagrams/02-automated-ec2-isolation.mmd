@@ -1,0 +1,14 @@
+flowchart TD
+    A["Detection signal"]
+    B["Validate finding and instance"]
+    C["Invoke response workflow"]
+    D["Apply quarantine security group"]
+    E["Snapshot and notify"]
+    F["Request approval if required"]
+    G["Record outcome"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

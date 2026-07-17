@@ -1,0 +1,14 @@
+flowchart TD
+    A["Investigation question"]
+    B["Define time, account, and Region"]
+    C["Select partitioned log data"]
+    D["Run scoped Athena query"]
+    E["Validate event context"]
+    F["Export evidence securely"]
+    G["Document findings"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

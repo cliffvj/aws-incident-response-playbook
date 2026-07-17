@@ -1,0 +1,14 @@
+flowchart TD
+    A["Affected fleet member"]
+    B["Validate launch source integrity"]
+    C["Remove from service"]
+    D["Preserve evidence"]
+    E["Correct image, template, or bootstrap"]
+    F["Launch clean replacement"]
+    G["Validate health and monitoring"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

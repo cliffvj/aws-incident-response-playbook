@@ -1,0 +1,14 @@
+flowchart TD
+    A["Evidence preservation approved"]
+    B["Record volume and instance state"]
+    C["Create tagged snapshot"]
+    D["Protect encryption keys and access"]
+    E["Copy to forensic account if required"]
+    F["Verify snapshot integrity and metadata"]
+    G["Update chain of custody"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G

@@ -1,4 +1,5 @@
 # AWS Incident Response Playbook
+> **Production-inspired runbooks, cloud security operations guidance, investigation workflows, and automation patterns for Amazon Web Services.**
 
 [![AWS](https://img.shields.io/badge/AWS-Incident%20Response-232F3E?logo=amazonwebservices&logoColor=white)](https://aws.amazon.com/security/incident-response/)
 [![Documentation](https://img.shields.io/badge/documentation-Markdown-000000?logo=markdown)](docs/index.md)
@@ -10,6 +11,18 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 
 > [!IMPORTANT]
 > This is an independent educational and operational reference. It is not an official AWS exam guide and does not replace your organization’s incident-response plan, legal guidance, or AWS Support. Never run containment or remediation commands without authorization, verified identifiers, evidence-preservation requirements, and a rollback plan.
+
+## Table of contents
+
+- [Start here](#start-here)
+- [Incident-response lifecycle](#incident-response-lifecycle)
+- [Runbook catalog](#runbook-catalog)
+- [Supporting procedures and references](#supporting-procedures-and-references)
+- [Repository structure](#repository-structure)
+- [Safe use of examples](#safe-use-of-examples)
+- [AWS lab strategy](#aws-lab-strategy)
+- [Project status](#project-status)
+- [Authoritative references](#authoritative-references)
 
 ## Start here
 
@@ -96,9 +109,11 @@ aws-incident-response-playbook/
 ├── docs/          # Scenario runbooks, checklists, and supporting procedures
 ├── cheat-sheets/  # Service-focused response and study references
 ├── queries/       # Athena SQL investigation queries
-├── diagrams/      # Mermaid and future architecture-diagram sources
+├── diagrams/      # Reusable Mermaid architecture and response-flow sources
 ├── templates/     # Incident records and evidence-log templates
-└── scripts/       # Validation and responder helper scripts
+├── scripts/       # Validation and responder helper scripts
+├── automation/    # Planned deployable response automation
+└── labs/          # Planned isolated hands-on exercises
 ```
 
 ## Safe use of examples
@@ -113,7 +128,7 @@ aws-incident-response-playbook/
 
 ## AWS lab strategy
 
-Read the complete objective, identify the required end state, inspect existing resources, and perform only the requested changes. Re-open every modified resource and verify the final configuration. Automated grading may evaluate exact names, tags, Region, security-group associations, AWS Config compliance, monitoring state, and SNS subscriptions.
+**Use a dedicated AWS lab account whenever possible; never practice these procedures against production resources.** Read the complete objective, identify the required end state, inspect existing resources, and perform only the requested changes. Re-open every modified resource and verify the final configuration. Automated grading may evaluate exact names, tags, Region, security-group associations, AWS Config compliance, monitoring state, and SNS subscriptions.
 
 ## Project status
 
