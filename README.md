@@ -5,7 +5,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-Markdown-000000?logo=markdown)](docs/index.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v1.3.0-blue.svg)](CHANGELOG.md)
 
 Production-inspired AWS incident-response runbooks for study, tabletop exercises, authorized labs, and adaptation to organizational procedures. The repository emphasizes the services and objectives associated with **AWS Incident Response Demonstrated**, while applying broader security-engineering practices for evidence preservation, containment, eradication, and secure recovery.
 
@@ -33,6 +33,7 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 | Classify incident severity | [Incident severity matrix](docs/incident-severity-matrix.md) |
 | Preserve evidence | [Evidence collection checklist](docs/evidence-collection-checklist.md) |
 | Match a problem to AWS services | [Service mapping](docs/service-mapping.md) |
+| Map scenarios to ATT&CK, NIST, and AWS guidance | [Framework mapping guide](docs/framework-mapping.md) |
 | Investigate CloudTrail at scale | [Athena query library](queries/cloudtrail-athena.sql) |
 | Use AWS CLI during response | [AWS CLI incident-response reference](cheat-sheets/aws-cli-incident-response.md) |
 | View planned enhancements | [Project roadmap](ROADMAP.md) |
@@ -91,7 +92,7 @@ flowchart LR
 |---|---|
 | Triage and governance | [Severity matrix](docs/incident-severity-matrix.md) · [Initial triage](docs/initial-triage-checklist.md) · [Evidence collection](docs/evidence-collection-checklist.md) |
 | Emergency procedures | [IAM lockdown](docs/iam-emergency-lockdown.md) · [Ransomware response](docs/ransomware-response.md) · [S3 data-leak response](docs/s3-data-leak-response.md) |
-| Decision support | [Decision trees](docs/decision-trees.md) · [Service mapping](docs/service-mapping.md) |
+| Decision support | [Decision trees](docs/decision-trees.md) · [Service mapping](docs/service-mapping.md) · [Framework mapping](docs/framework-mapping.md) |
 | Service cheat sheets | [CloudTrail](cheat-sheets/cloudtrail.md) · [IAM](cheat-sheets/iam.md) · [AWS Config](cheat-sheets/config.md) · [CloudWatch](cheat-sheets/cloudwatch.md) · [Systems Manager](cheat-sheets/systems-manager.md) · [Athena](cheat-sheets/athena.md) |
 | Query and command references | [Athena SQL](queries/cloudtrail-athena.sql) · [AWS CLI](cheat-sheets/aws-cli-incident-response.md) |
 | Templates | [Incident record](templates/incident-record.md) · [Evidence log](templates/evidence-log.csv) |
@@ -133,7 +134,7 @@ aws-incident-response-playbook/
 ## Project status
 
 - **Phase 1 — Foundation:** complete
-- **Phase 2 — Documentation professionalization:** in progress
+- **Phase 2 — Documentation professionalization:** in progress (visual flows and framework mappings complete)
 - **Phase 3 — Response automation:** planned
 - **Phase 4 — Deployable labs:** planned
 
