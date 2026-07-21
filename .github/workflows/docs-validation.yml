@@ -1,0 +1,30 @@
+name: Documentation validation
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "scripts/check_markdown_links.py"
+      - ".github/workflows/docs-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "scripts/check_markdown_links.py"
+      - ".github/workflows/docs-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  internal-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate internal Markdown links
+        run: python3 scripts/check_markdown_links.py

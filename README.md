@@ -5,7 +5,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-Markdown-000000?logo=markdown)](docs/index.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Release](https://img.shields.io/badge/release-v1.4.0-blue.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](CHANGELOG.md)
 
 Production-inspired AWS incident-response runbooks for study, tabletop exercises, authorized labs, and adaptation to organizational procedures. The repository emphasizes the services and objectives associated with **AWS Incident Response Demonstrated**, while applying broader security-engineering practices for evidence preservation, containment, eradication, and secure recovery.
 
@@ -29,6 +29,9 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 | Need | Go to |
 |---|---|
 | Browse all documentation | [Documentation index](docs/index.md) |
+| Browse by response domain | [Domain indexes](docs/domains/README.md) |
+| Verify guidance sources | [Authoritative reference catalog](docs/references.md) |
+| Review published versions | [Release history](releases/README.md) |
 | Respond to a suspected incident | [Initial triage checklist](docs/initial-triage-checklist.md) |
 | Classify incident severity | [Incident severity matrix](docs/incident-severity-matrix.md) |
 | Preserve evidence | [Evidence collection checklist](docs/evidence-collection-checklist.md) |
@@ -93,9 +96,9 @@ flowchart LR
 |---|---|
 | Triage and governance | [Severity matrix](docs/incident-severity-matrix.md) · [Initial triage](docs/initial-triage-checklist.md) · [Evidence collection](docs/evidence-collection-checklist.md) |
 | Emergency procedures | [IAM lockdown](docs/iam-emergency-lockdown.md) · [Ransomware response](docs/ransomware-response.md) · [S3 data-leak response](docs/s3-data-leak-response.md) |
-| Decision support | [Decision trees](docs/decision-trees.md) · [Service mapping](docs/service-mapping.md) · [Framework mapping](docs/framework-mapping.md) |
+| Decision support | [Decision trees](docs/decision-trees.md) · [Service mapping](docs/service-mapping.md) · [Framework mapping](docs/framework-mapping.md) · [Domain indexes](docs/domains/README.md) |
 | Service cheat sheets | [CloudTrail](cheat-sheets/cloudtrail.md) · [IAM](cheat-sheets/iam.md) · [AWS Config](cheat-sheets/config.md) · [CloudWatch](cheat-sheets/cloudwatch.md) · [Systems Manager](cheat-sheets/systems-manager.md) · [Athena](cheat-sheets/athena.md) |
-| Query and command references | [Athena SQL](queries/cloudtrail-athena.sql) · [AWS CLI](cheat-sheets/aws-cli-incident-response.md) |
+| Query and command references | [Athena SQL](queries/cloudtrail-athena.sql) · [AWS CLI](cheat-sheets/aws-cli-incident-response.md) · [Authoritative references](docs/references.md) |
 | Templates | [Incident record](templates/incident-record.md) · [Evidence log](templates/evidence-log.csv) |
 
 ## Repository structure
@@ -108,12 +111,14 @@ aws-incident-response-playbook/
 ├── CONTRIBUTING.md
 ├── ROADMAP.md
 ├── SECURITY.md
-├── docs/          # Scenario runbooks, checklists, and supporting procedures
+├── docs/          # Runbooks, domain indexes, mappings, references, and procedures
 ├── cheat-sheets/  # Service-focused response and study references
 ├── queries/       # Athena SQL investigation queries
 ├── diagrams/      # Reusable Mermaid architecture and response-flow sources
 ├── templates/     # Incident records and evidence-log templates
-├── scripts/       # Validation and responder helper scripts
+├── scripts/       # Documentation validation and responder helper scripts
+├── releases/      # Versioned release notes and release-history index
+├── .github/       # Pull-request and documentation-validation workflow
 ├── automation/    # Planned deployable response automation
 └── labs/          # Planned isolated hands-on exercises
 ```
@@ -132,11 +137,21 @@ aws-incident-response-playbook/
 
 **Use a dedicated AWS lab account whenever possible; never practice these procedures against production resources.** Read the complete objective, identify the required end state, inspect existing resources, and perform only the requested changes. Re-open every modified resource and verify the final configuration. Automated grading may evaluate exact names, tags, Region, security-group associations, AWS Config compliance, monitoring state, and SNS subscriptions.
 
+## Documentation validation
+
+Run the repository checks before submitting documentation changes:
+
+```bash
+python3 scripts/check_markdown_links.py
+```
+
+GitHub Actions runs the same internal-link validation for pull requests and pushes to `main`. External references are reviewed manually because remote sites can rate-limit automated checks.
+
 ## Project status
 
 - **Phase 1 — Foundation:** complete
-- **Phase 2 — Documentation professionalization:** in progress (visual flows, framework mappings, and decision intelligence complete)
-- **Phase 3 — Response automation:** planned
+- **Phase 2 — Documentation professionalization:** complete
+- **Phase 3 — Response automation:** next
 - **Phase 4 — Deployable labs:** planned
 
 See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
@@ -146,6 +161,8 @@ See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is mainta
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Do not disclose credentials, customer data, account identifiers, or active incident details in public issues; see [SECURITY.md](SECURITY.md).
 
 ## Authoritative references
+
+The complete, categorized source catalog is maintained in [docs/references.md](docs/references.md). Core references include:
 
 - [AWS Security Incident Response Guide](https://docs.aws.amazon.com/whitepapers/latest/aws-security-incident-response-guide/welcome.html)
 - [AWS Security Incident Response documentation](https://docs.aws.amazon.com/security-ir/)

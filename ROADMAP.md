@@ -15,7 +15,7 @@ This roadmap describes the planned evolution of the AWS Incident Response Playbo
 
 ## Phase 2 — Documentation professionalization
 
-**Status:** In progress
+**Status:** Complete
 
 ### Commit 1 — Repository polish
 
@@ -27,29 +27,31 @@ This roadmap describes the planned evolution of the AWS Incident Response Playbo
 
 ### Commit 2 — Mermaid diagrams
 
-- [ ] Add a scenario workflow diagram to every runbook.
-- [ ] Add architecture diagrams for the major response patterns.
-- [ ] Add diagram source conventions and accessibility notes.
+- [x] Add a scenario workflow diagram to every runbook.
+- [x] Add architecture diagrams for the major response patterns.
+- [x] Add diagram source conventions and accessibility notes.
 
 ### Commit 3 — Framework mappings
 
-- [ ] Map each scenario to relevant MITRE ATT&CK techniques.
-- [ ] Map each scenario to the NIST incident-response lifecycle.
-- [ ] Map each scenario to AWS Well-Architected Security Pillar guidance.
-- [ ] Clearly separate direct mappings from contextual or inferred mappings.
+- [x] Map each scenario to relevant MITRE ATT&CK techniques.
+- [x] Map each scenario to the NIST incident-response lifecycle.
+- [x] Map each scenario to AWS Well-Architected Security Pillar guidance.
+- [x] Clearly separate direct mappings from contextual or inferred mappings.
 
 ### Commit 4 — Decision trees
 
-- [ ] Add scenario-specific responder decision trees.
-- [ ] Add escalation and approval checkpoints.
-- [ ] Add destructive-action safeguards and rollback branches.
+- [x] Add scenario-specific responder decision trees.
+- [x] Add escalation and approval checkpoints.
+- [x] Add destructive-action safeguards and rollback branches.
 
 ### Commit 5 — Navigation and references
 
-- [ ] Add consistent previous/next navigation to runbooks.
-- [ ] Improve cross-references among related scenarios.
-- [ ] Add authoritative AWS references to each runbook.
-- [ ] Run a complete Markdown-link and formatting review.
+- [x] Add consistent previous/next navigation to runbooks.
+- [x] Improve cross-references among related scenarios.
+- [x] Add authoritative AWS references to each runbook.
+- [x] Run a complete Markdown-link and formatting review.
+
+> Phase 2 concluded with release **v2.0.0 — Production Documentation**.
 
 ## Phase 3 — Response automation
 
