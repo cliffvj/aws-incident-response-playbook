@@ -1,25 +1,33 @@
 ## Summary
 
-Describe the decision-support or documentation changes in this pull request.
+Describe the purpose and user-visible outcome of this change.
 
 ## Scope
 
-- [ ] Scenario runbooks
-- [ ] Decision guide or matrices
-- [ ] Navigation or release documentation
-- [ ] Other documentation
+- [ ] Runbooks or operational procedures
+- [ ] Framework mappings or references
+- [ ] Diagrams or navigation
+- [ ] Automation or infrastructure as code
+- [ ] Tests, validation, or maintenance
 
-## Safety review
+## Safety and evidence review
 
-- [ ] Examples use placeholders and contain no credentials or real account identifiers.
-- [ ] Destructive or business-impacting actions include authorization, evidence, and rollback considerations.
-- [ ] Decision paths prefer narrow, reversible containment when evidence is incomplete.
-- [ ] Automation guidance includes confidence, approval, idempotency, and postcondition checks.
+- [ ] Commands use placeholders and require context verification.
+- [ ] Destructive or disruptive actions include approval, evidence, and rollback guidance.
+- [ ] No credentials, customer data, account identifiers, or active incident details are included.
+- [ ] External claims are grounded in authoritative sources.
 
 ## Validation
 
-- [ ] Markdown links resolve.
-- [ ] Mermaid blocks render on GitHub.
-- [ ] Tables render correctly.
-- [ ] `git diff --check` passes.
-- [ ] Release notes and changelog are updated when applicable.
+- [ ] `python3 scripts/check_markdown_links.py` passes.
+- [ ] Mermaid diagrams render on GitHub where applicable.
+- [ ] Relative links work from the modified file locations.
+- [ ] The changelog and release notes are updated when required.
+
+## Source review
+
+List the primary AWS, NIST, MITRE, or other authoritative references reviewed for this change and note any important version or access date.
+
+## Breaking changes
+
+None, or describe migration steps.

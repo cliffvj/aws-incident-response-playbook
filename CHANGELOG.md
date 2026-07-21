@@ -4,6 +4,28 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] — 2026-07-17
+
+### Added
+
+- Domain-oriented documentation indexes for compute, identity, data, detection, and automation/recovery response.
+- Central authoritative-reference catalog covering AWS, NIST, and MITRE sources.
+- Release-history index under `releases/README.md`.
+- Repository-local Markdown link validator and GitHub Actions documentation validation workflow.
+- Phase 2 completion and Phase 3 handoff documentation.
+
+### Changed
+
+- Completed cross-navigation among scenario runbooks, decision support, framework mappings, domain indexes, and source references.
+- Updated the main README, documentation index, roadmap, and pull-request template for the production-documentation milestone.
+- Marked Phase 2 as complete and identified response automation as the next project phase.
+
+### Validation
+
+- Reviewed internal Markdown links and relative paths.
+- Consolidated authoritative references to reduce duplication and simplify maintenance.
+- Preserved the operational content of all twenty runbooks.
+
 ## [Unreleased]
 
 ## [1.4.0] — 2026-07-17
