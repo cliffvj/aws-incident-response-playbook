@@ -28,6 +28,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Complete project roadmap covering Phases 1 through 6, Phase 3 commit sequencing, target releases, dependencies, engineering standards, risk controls, success measures, and definitions of done.
+
+### Changed
+
+- Expanded `ROADMAP.md` from a milestone checklist into the authoritative project planning and governance document.
+
 ## [2.1.0] — 2026-07-24
 
 ### Added
