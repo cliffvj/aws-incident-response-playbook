@@ -5,7 +5,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-Markdown-000000?logo=markdown)](docs/index.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v2.1.0-blue.svg)](CHANGELOG.md)
 
 Production-inspired AWS incident-response runbooks for study, tabletop exercises, authorized labs, and adaptation to organizational procedures. The repository emphasizes the services and objectives associated with **AWS Incident Response Demonstrated**, while applying broader security-engineering practices for evidence preservation, containment, eradication, and secure recovery.
 
@@ -40,6 +40,7 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 | Choose containment, evidence, escalation, and recovery paths | [Incident-response decision guide](docs/decision-trees.md) |
 | Investigate CloudTrail at scale | [Athena query library](queries/cloudtrail-athena.sql) |
 | Use AWS CLI during response | [AWS CLI incident-response reference](cheat-sheets/aws-cli-incident-response.md) |
+| Explore response automation | [Automation framework](automation/README.md) |
 | View planned enhancements | [Project roadmap](ROADMAP.md) |
 
 ## Incident-response lifecycle
@@ -100,6 +101,7 @@ flowchart LR
 | Service cheat sheets | [CloudTrail](cheat-sheets/cloudtrail.md) · [IAM](cheat-sheets/iam.md) · [AWS Config](cheat-sheets/config.md) · [CloudWatch](cheat-sheets/cloudwatch.md) · [Systems Manager](cheat-sheets/systems-manager.md) · [Athena](cheat-sheets/athena.md) |
 | Query and command references | [Athena SQL](queries/cloudtrail-athena.sql) · [AWS CLI](cheat-sheets/aws-cli-incident-response.md) · [Authoritative references](docs/references.md) |
 | Templates | [Incident record](templates/incident-record.md) · [Evidence log](templates/evidence-log.csv) |
+| Automation | [Framework](automation/README.md) · [Lambda actions](automation/lambda/README.md) · [Terraform deployment](automation/terraform/README.md) |
 
 ## Repository structure
 
@@ -119,7 +121,7 @@ aws-incident-response-playbook/
 ├── scripts/       # Documentation validation and responder helper scripts
 ├── releases/      # Versioned release notes and release-history index
 ├── .github/       # Pull-request and documentation-validation workflow
-├── automation/    # Planned deployable response automation
+├── automation/    # Deployable, dry-run-first response automation
 └── labs/          # Planned isolated hands-on exercises
 ```
 
@@ -151,7 +153,7 @@ GitHub Actions runs the same internal-link validation for pull requests and push
 
 - **Phase 1 — Foundation:** complete
 - **Phase 2 — Documentation professionalization:** complete
-- **Phase 3 — Response automation:** next
+- **Phase 3 — Response automation:** in progress
 - **Phase 4 — Deployable labs:** planned
 
 See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).

@@ -1,0 +1,4 @@
+aws_region = "us-east-1"
+project_name = "aws-ir-lab"
+log_retention_days = 14
+tags = { Owner = "replace-me", Environment = "lab" }

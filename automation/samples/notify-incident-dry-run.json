@@ -1,0 +1,8 @@
+{
+  "incident_id": "INC-2026-0001",
+  "severity": "HIGH",
+  "message": "Dry-run notification test",
+  "dry_run": true,
+  "region": "us-east-1",
+  "requested_by": "analyst@example.invalid"
+}

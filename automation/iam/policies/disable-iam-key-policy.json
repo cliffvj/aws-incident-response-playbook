@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InspectAndDisableUserKey",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetAccessKeyLastUsed",
+        "iam:UpdateAccessKey"
+      ],
+      "Resource": "arn:aws:iam::*:user/*"
+    }
+  ]
+}

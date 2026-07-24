@@ -28,6 +28,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [2.1.0] — 2026-07-24
+
+### Added
+
+- Dry-run-first response automation framework under `automation/`.
+- Five modular Python Lambda actions for EC2 metadata collection, EC2 isolation, EBS snapshot creation, IAM access-key disablement, and SNS notification.
+- Shared event validation, structured logging, AWS context, tagging, and response helpers.
+- Least-privilege IAM policy examples and an explicit permissions matrix.
+- Terraform deployment scaffold for Lambda functions, IAM roles, CloudWatch log groups, and an encrypted SNS topic.
+- Sample invocation events, local packaging scripts, unit tests, and GitHub Actions automation validation.
+- Versioned release notes and complete Phase 3 Commit 1 installation instructions.
+
+### Changed
+
+- Marked Phase 3 as in progress in the main README and roadmap.
+- Expanded repository navigation to include automation and deployment resources.
+
+### Safety
+
+- Mutating actions default to `dry_run: true` and require explicit identifiers.
+- EC2 isolation records original security-group associations in the response for rollback planning.
+- Automation is intentionally not connected to automatic detection triggers in this commit.
+
+
 ## [1.4.0] — 2026-07-17
 
 ### Added
