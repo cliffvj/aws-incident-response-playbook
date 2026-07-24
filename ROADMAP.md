@@ -55,15 +55,22 @@ This roadmap describes the planned evolution of the AWS Incident Response Playbo
 
 ## Phase 3 — Response automation
 
-**Status:** Planned
+**Status:** In progress
 
-- [ ] Add a safe EC2 isolation Lambda function.
-- [ ] Add IAM access-key disable and session-revocation automation.
-- [ ] Add S3 public-access remediation automation.
+### Commit 1 — Automation framework
+
+- [x] Establish dry-run-first automation conventions and event contracts.
+- [x] Add modular Lambda actions for EC2 metadata collection, EC2 isolation, EBS snapshots, IAM key disablement, and SNS notification.
+- [x] Add least-privilege IAM policy examples, Terraform deployment scaffolding, sample events, tests, and CI validation.
+
+### Planned commits
+
+- [ ] Add S3 public-access remediation and policy rollback automation.
 - [ ] Add Step Functions workflows with approval gates.
 - [ ] Add Systems Manager Automation documents.
-- [ ] Add CloudFormation and Terraform deployment options.
-- [ ] Add automated tests, linting, and least-privilege IAM examples.
+- [ ] Add EventBridge and CloudWatch detection-to-response integrations.
+- [ ] Expand Terraform deployment modules and multi-account patterns.
+- [ ] Add an end-to-end authorized incident-response lab.
 
 ## Phase 4 — Deployable practice labs
 

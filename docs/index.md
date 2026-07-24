@@ -78,3 +78,13 @@ This index organizes the repository by responder task. During an active incident
 - [Contributing guide](../CONTRIBUTING.md)
 - [Security policy](../SECURITY.md)
 - [Code of Conduct](../CODE_OF_CONDUCT.md)
+
+
+## Response automation
+
+- [Automation framework](../automation/README.md)
+- [Lambda actions](../automation/lambda/README.md)
+- [IAM permissions](../automation/iam/README.md)
+- [Terraform deployment](../automation/terraform/README.md)
+- [Sample events](../automation/samples/README.md)
+- [Testing and validation](../automation/tests/README.md)

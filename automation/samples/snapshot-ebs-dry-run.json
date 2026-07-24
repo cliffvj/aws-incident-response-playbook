@@ -1,0 +1,7 @@
+{
+  "incident_id": "INC-2026-0001",
+  "instance_id": "i-0123456789abcdef0",
+  "dry_run": true,
+  "region": "us-east-1",
+  "requested_by": "analyst@example.invalid"
+}

@@ -1,0 +1,7 @@
+{
+  "incident_id": "INC-2026-0002",
+  "user_name": "example-user",
+  "access_key_id": "AKIAIOSFODNN7EXAMPLE",
+  "dry_run": true,
+  "requested_by": "analyst@example.invalid"
+}
