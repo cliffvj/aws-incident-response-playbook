@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadNetworkInterfaces",
+      "Effect": "Allow",
+      "Action": "ec2:DescribeNetworkInterfaces",
+      "Resource": "*"
+    },
+    {
+      "Sid": "RestoreNetworkInterfaceSecurityGroups",
+      "Effect": "Allow",
+      "Action": "ec2:ModifyNetworkInterfaceAttribute",
+      "Resource": "arn:aws:ec2:*:111122223333:network-interface/*"
+    }
+  ]
+}

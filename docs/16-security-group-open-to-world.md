@@ -117,6 +117,10 @@ Amazon VPC, Amazon EC2, AWS Config, AWS CloudTrail
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
 
+## Automation implementation
+
+For full workload quarantine rather than a targeted rule correction, use [`ensure_quarantine_security_group`](../automation/lambda/ensure_quarantine_security_group/README.md) and [`isolate_ec2_instance`](../automation/lambda/isolate_ec2_instance/README.md). The automation requires a ruleless group and records security-group associations for every attached network interface. Targeted rule remediation remains a separate manual decision and is not replaced by this containment action.
+
 ## Decision support
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.

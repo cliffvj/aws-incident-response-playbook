@@ -1,7 +1,9 @@
 {
   "incident_id": "INC-2026-0001",
-  "instance_id": "i-0123456789abcdef0",
-  "dry_run": true,
+  "expected_account_id": "111122223333",
   "region": "us-east-1",
-  "requested_by": "analyst@example.invalid"
+  "instance_id": "i-0123456789abcdef0",
+  "requested_by": "analyst@example.invalid",
+  "reason": "Preserve attached EBS volumes before containment.",
+  "dry_run": true
 }

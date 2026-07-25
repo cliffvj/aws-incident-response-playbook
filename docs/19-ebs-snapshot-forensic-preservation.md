@@ -116,6 +116,10 @@ Amazon EC2, Amazon EBS, AWS Identity and Access Management, AWS CloudTrail
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
 
+## Automation implementation
+
+[`snapshot_ebs_volumes`](../automation/lambda/snapshot_ebs_volumes/README.md) discovers attached EBS volumes, plans or submits tagged snapshots, records source instance and volume identifiers, and avoids duplicate snapshots for the same incident/source-volume pair. Snapshot completion remains asynchronous and must be verified independently.
+
 ## Decision support
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.

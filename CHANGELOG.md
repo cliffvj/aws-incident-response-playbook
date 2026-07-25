@@ -4,29 +4,48 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] — 2026-07-17
+## [Unreleased]
+
+### Planned
+
+- Step Functions incident orchestration with approval, retry, catch, compensation, and execution-correlation paths.
+
+## [2.2.0] — 2026-07-25
 
 ### Added
 
-- Domain-oriented documentation indexes for compute, identity, data, detection, and automation/recovery response.
-- Central authoritative-reference catalog covering AWS, NIST, and MITRE sources.
-- Release-history index under `releases/README.md`.
-- Repository-local Markdown link validator and GitHub Actions documentation validation workflow.
-- Phase 2 completion and Phase 3 handoff documentation.
+- Six additional Lambda actions for quarantine security-group preparation, EC2 security-group restoration, S3 public-access inspection, S3 public-access containment, S3 Block Public Access restoration, and IAM access-key restoration.
+- Checksummed rollback manifests with incident, resource, account, Region, action, state, and integrity validation.
+- State-based idempotency for EC2 isolation and restoration, EBS snapshots, IAM key status changes, S3 containment and restoration, and quarantine security-group reuse.
+- S3 inspection of bucket-level Block Public Access, bucket policy, policy status, ACL, and Object Ownership before containment.
+- Machine-readable action catalog and automated action-contract validation.
+- Expanded IAM policies, Terraform deployment scopes, dry-run events, rollback event examples, operator guidance, troubleshooting, cost, cleanup, and action-level documentation.
+- Thirty-one mocked unit tests covering validation, manifests, tags, EC2, IAM, S3, snapshot, packaging, and action contracts.
+- Complete project roadmap covering Phases 1 through 6, target releases, dependencies, engineering standards, risk controls, success measures, and definitions of done.
+- Versioned release notes and complete Phase 3 Commit 2 installation instructions.
 
 ### Changed
 
-- Completed cross-navigation among scenario runbooks, decision support, framework mappings, domain indexes, and source references.
-- Updated the main README, documentation index, roadmap, and pull-request template for the production-documentation milestone.
-- Marked Phase 2 as complete and identified response automation as the next project phase.
+- EC2 isolation now evaluates and changes every attached network interface rather than relying only on the instance's primary security-group attribute.
+- EBS snapshot creation now tags source instance and volume IDs and avoids duplicate incident/source-volume snapshots.
+- IAM key disablement now verifies the key belongs to the supplied user and returns a rollback manifest with the original status.
+- SNS notification now validates that the topic belongs to the selected account and Region.
+- Terraform now deploys all eleven response actions with one role and log group per function and explicit S3 bucket and IAM user scope variables.
+- Expanded `ROADMAP.md` into the authoritative project planning and governance document and marked Commit 2 complete.
+- Updated runbooks and repository navigation with direct automation and rollback references.
+
+### Safety
+
+- Mutating actions continue to default to `dry_run: true`.
+- Restore actions require `confirm_restore: true` and a valid matching rollback manifest.
+- S3 containment changes only bucket-level Block Public Access and preserves bucket policy and ACL documents unchanged.
+- Cross-account and cross-Region mismatches fail closed.
+- Quarantine security groups must have no ingress or egress rules before use.
 
 ### Validation
 
-- Reviewed internal Markdown links and relative paths.
-- Consolidated authoritative references to reduce duplication and simplify maintenance.
-- Preserved the operational content of all twenty runbooks.
-
-## [Unreleased]
+- Python compilation, JSON validation, action-contract validation, Lambda packaging, and 31 unit tests pass locally.
+- Terraform formatting and validation are enforced by GitHub Actions and documented for local execution.
 
 ## [2.1.0] — 2026-07-24
 
@@ -51,6 +70,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - EC2 isolation records original security-group associations in the response for rollback planning.
 - Automation is intentionally not connected to automatic detection triggers in this commit.
 
+## [2.0.0] — 2026-07-17
+
+### Added
+
+- Domain-oriented documentation indexes for compute, identity, data, detection, and automation/recovery response.
+- Central authoritative-reference catalog covering AWS, NIST, and MITRE sources.
+- Release-history index under `releases/README.md`.
+- Repository-local Markdown link validator and GitHub Actions documentation validation workflow.
+- Phase 2 completion and Phase 3 handoff documentation.
+
+### Changed
+
+- Completed cross-navigation among scenario runbooks, decision support, framework mappings, domain indexes, and source references.
+- Updated the main README, documentation index, roadmap, and pull-request template for the production-documentation milestone.
+- Marked Phase 2 as complete and identified response automation as the next project phase.
+
+### Validation
+
+- Reviewed internal Markdown links and relative paths.
+- Consolidated authoritative references to reduce duplication and simplify maintenance.
+- Preserved the operational content of all twenty runbooks.
 
 ## [1.4.0] — 2026-07-17
 

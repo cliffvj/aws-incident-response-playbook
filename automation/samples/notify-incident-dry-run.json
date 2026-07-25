@@ -1,8 +1,10 @@
 {
   "incident_id": "INC-2026-0001",
-  "severity": "HIGH",
-  "message": "Dry-run notification test",
-  "dry_run": true,
+  "expected_account_id": "111122223333",
   "region": "us-east-1",
-  "requested_by": "analyst@example.invalid"
+  "severity": "High",
+  "message": "Dry-run containment plan is ready for analyst approval.",
+  "requested_by": "analyst@example.invalid",
+  "reason": "Exercise notification path without publishing.",
+  "dry_run": true
 }

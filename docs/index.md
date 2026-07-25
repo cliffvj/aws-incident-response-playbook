@@ -83,7 +83,10 @@ This index organizes the repository by responder task. During an active incident
 ## Response automation
 
 - [Automation framework](../automation/README.md)
+- [Response action workflows](../automation/docs/response-actions.md)
 - [Lambda actions](../automation/lambda/README.md)
+- [Rollback manifests](../automation/docs/rollback-manifests.md)
+- [Idempotency and retry guidance](../automation/docs/idempotency.md)
 - [IAM permissions](../automation/iam/README.md)
 - [Terraform deployment](../automation/terraform/README.md)
 - [Sample events](../automation/samples/README.md)

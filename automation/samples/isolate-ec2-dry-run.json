@@ -1,9 +1,10 @@
 {
   "incident_id": "INC-2026-0001",
-  "instance_id": "i-0123456789abcdef0",
-  "quarantine_security_group_id": "sg-0123456789abcdef0",
-  "dry_run": true,
+  "expected_account_id": "111122223333",
   "region": "us-east-1",
+  "instance_id": "i-0123456789abcdef0",
+  "quarantine_security_group_id": "sg-09999999999999999",
   "requested_by": "analyst@example.invalid",
-  "reason": "Authorized containment validation"
+  "reason": "Contain confirmed malicious network activity after evidence preservation.",
+  "dry_run": true
 }

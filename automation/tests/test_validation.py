@@ -1,12 +1,56 @@
-import sys, unittest
+import sys
+import unittest
 from pathlib import Path
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"shared"))
-from aws_ir.validation import dry_run, require_string
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shared"))
+
 from aws_ir.errors import ValidationError
+from aws_ir.validation import (
+    dry_run,
+    require_bucket_name,
+    require_incident,
+    require_instance_id,
+    require_string,
+    require_true,
+)
+
+
 class TestValidation(unittest.TestCase):
-    def test_dry_run_defaults_true(self): self.assertTrue(dry_run({}))
-    def test_dry_run_false(self): self.assertFalse(dry_run({"dry_run":False}))
+    def test_dry_run_defaults_true(self):
+        self.assertTrue(dry_run({}))
+
+    def test_dry_run_false(self):
+        self.assertFalse(dry_run({"dry_run": False}))
+
     def test_reject_non_boolean(self):
-        with self.assertRaises(ValidationError): dry_run({"dry_run":"false"})
-    def test_require_string(self): self.assertEqual(require_string({"x":" value "},"x"),"value")
-if __name__=="__main__": unittest.main()
+        with self.assertRaises(ValidationError):
+            dry_run({"dry_run": "false"})
+
+    def test_require_string_trims(self):
+        self.assertEqual(require_string({"x": " value "}, "x"), "value")
+
+    def test_require_true_is_explicit(self):
+        with self.assertRaises(ValidationError):
+            require_true({"confirm_restore": 1}, "confirm_restore")
+
+    def test_incident_id_rejects_spaces(self):
+        with self.assertRaises(ValidationError):
+            require_incident({"incident_id": "INC 1"})
+
+    def test_instance_id_validation(self):
+        self.assertEqual(
+            require_instance_id({"instance_id": "i-0123456789abcdef0"}),
+            "i-0123456789abcdef0",
+        )
+
+    def test_bucket_name_validation(self):
+        self.assertEqual(
+            require_bucket_name({"bucket_name": "incident-evidence-123"}),
+            "incident-evidence-123",
+        )
+        with self.assertRaises(ValidationError):
+            require_bucket_name({"bucket_name": "Invalid_Bucket"})
+
+
+if __name__ == "__main__":
+    unittest.main()

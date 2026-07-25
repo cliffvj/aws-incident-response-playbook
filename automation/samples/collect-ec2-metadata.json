@@ -1,6 +1,7 @@
 {
   "incident_id": "INC-2026-0001",
-  "instance_id": "i-0123456789abcdef0",
+  "expected_account_id": "111122223333",
   "region": "us-east-1",
+  "instance_id": "i-0123456789abcdef0",
   "requested_by": "analyst@example.invalid"
 }

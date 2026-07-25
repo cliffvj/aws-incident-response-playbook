@@ -116,6 +116,18 @@ Amazon CloudWatch, Amazon SNS, AWS Lambda, AWS Step Functions, Amazon EC2, Amazo
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
 
+## Automation implementation
+
+The Phase 3 response actions provide a dry-run-first implementation path:
+
+1. [`collect_ec2_metadata`](../automation/lambda/collect_ec2_metadata/README.md) captures the target state.
+2. [`snapshot_ebs_volumes`](../automation/lambda/snapshot_ebs_volumes/README.md) prepares tagged storage evidence.
+3. [`ensure_quarantine_security_group`](../automation/lambda/ensure_quarantine_security_group/README.md) creates or reuses a ruleless per-incident group.
+4. [`isolate_ec2_instance`](../automation/lambda/isolate_ec2_instance/README.md) changes every attached network interface and returns a rollback manifest.
+5. [`restore_ec2_security_groups`](../automation/lambda/restore_ec2_security_groups/README.md) restores reviewed associations from that manifest.
+
+Review the [response action workflow](../automation/docs/response-actions.md) and [rollback manifest specification](../automation/docs/rollback-manifests.md) before lab execution.
+
 ## Decision support
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.

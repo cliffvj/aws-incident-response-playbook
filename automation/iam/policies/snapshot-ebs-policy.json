@@ -2,13 +2,16 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "ReadInstance",
+      "Sid": "ReadInstanceAndExistingIncidentSnapshots",
       "Effect": "Allow",
-      "Action": "ec2:DescribeInstances",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeSnapshots"
+      ],
       "Resource": "*"
     },
     {
-      "Sid": "CreateEvidenceSnapshots",
+      "Sid": "CreateAndTagEvidenceSnapshots",
       "Effect": "Allow",
       "Action": [
         "ec2:CreateSnapshot",
