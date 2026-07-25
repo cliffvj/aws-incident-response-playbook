@@ -1,0 +1,36 @@
+{
+  "confirm_restore": true,
+  "dry_run": true,
+  "expected_account_id": "111122223333",
+  "incident_id": "INC-2026-0001",
+  "instance_id": "i-0123456789abcdef0",
+  "reason": "Restore reviewed pre-isolation security-group associations.",
+  "region": "us-east-1",
+  "requested_by": "analyst@example.invalid",
+  "rollback_manifest": {
+    "action": "isolate_ec2_instance",
+    "captured_at": "2026-07-24T17:29:16.927558+00:00",
+    "checksum_sha256": "ce5a29fe22418d64dd38846c6cc7f031f5897d3bf160b10aeb19214f3e555457",
+    "incident_id": "INC-2026-0001",
+    "manifest_version": 1,
+    "metadata": {
+      "quarantine_security_group_id": "sg-09999999999999999"
+    },
+    "resource": {
+      "account_id": "111122223333",
+      "id": "i-0123456789abcdef0",
+      "region": "us-east-1",
+      "type": "ec2-instance"
+    },
+    "state": {
+      "network_interfaces": [
+        {
+          "network_interface_id": "eni-0123456789abcdef0",
+          "security_group_ids": [
+            "sg-01111111111111111"
+          ]
+        }
+      ]
+    }
+  }
+}

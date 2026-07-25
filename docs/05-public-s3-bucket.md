@@ -117,6 +117,16 @@ Amazon S3, AWS CloudTrail, Amazon Athena, AWS Config, Amazon SNS
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
 
+## Automation implementation
+
+The S3 response actions separate evidence collection, containment, and restoration:
+
+- [`inspect_s3_public_access`](../automation/lambda/inspect_s3_public_access/README.md) captures bucket-level Block Public Access, policy, policy status, ACL, and Object Ownership.
+- [`contain_s3_public_access`](../automation/lambda/contain_s3_public_access/README.md) enables all four bucket-level Block Public Access controls while leaving the policy and ACL unchanged.
+- [`restore_s3_public_access`](../automation/lambda/restore_s3_public_access/README.md) restores only the captured bucket-level Block Public Access state from a validated rollback manifest.
+
+Review the [S3 response sequence](../automation/docs/response-actions.md#s3-public-access-sequence) before authorizing a write.
+
 ## Decision support
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.

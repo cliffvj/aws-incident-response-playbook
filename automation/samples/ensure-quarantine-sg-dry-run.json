@@ -1,0 +1,9 @@
+{
+  "incident_id": "INC-2026-0001",
+  "expected_account_id": "111122223333",
+  "region": "us-east-1",
+  "vpc_id": "vpc-0123456789abcdef0",
+  "requested_by": "analyst@example.invalid",
+  "reason": "Prepare a ruleless quarantine security group for approved containment.",
+  "dry_run": true
+}

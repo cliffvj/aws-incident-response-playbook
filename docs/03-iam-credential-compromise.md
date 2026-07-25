@@ -116,6 +116,12 @@ AWS Identity and Access Management, AWS CloudTrail, Amazon Athena, Amazon SNS
 
 Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**, **restrict**, **snapshot**, **query**, **notify**, **remediate**, and **validate**. Complete exactly what the lab requests; avoid unrelated improvements that could consume time or break grading dependencies.
 
+## Automation implementation
+
+Use [`disable_iam_access_key`](../automation/lambda/disable_iam_access_key/README.md) to verify the user/key relationship, collect last-used context, and plan or perform deactivation. It returns the original status in a checksummed rollback manifest. [`restore_iam_access_key`](../automation/lambda/restore_iam_access_key/README.md) is available only for an explicitly approved recovery path; replacement and deletion are generally safer for a confirmed compromised key.
+
+See the [IAM response action sequence](../automation/docs/response-actions.md#iam-access-key-sequence) and [rollback safeguards](../automation/docs/rollback-manifests.md).
+
 ## Decision support
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.

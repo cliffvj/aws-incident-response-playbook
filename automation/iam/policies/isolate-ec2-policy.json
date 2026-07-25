@@ -11,10 +11,10 @@
       "Resource": "*"
     },
     {
-      "Sid": "ReplaceInstanceSecurityGroups",
+      "Sid": "ReplaceNetworkInterfaceSecurityGroups",
       "Effect": "Allow",
-      "Action": "ec2:ModifyInstanceAttribute",
-      "Resource": "arn:aws:ec2:*:*:instance/*"
+      "Action": "ec2:ModifyNetworkInterfaceAttribute",
+      "Resource": "arn:aws:ec2:*:111122223333:network-interface/*"
     }
   ]
 }

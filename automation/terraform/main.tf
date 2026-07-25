@@ -1,3 +1,4 @@
+data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "archive_file" "lambda" {
@@ -60,20 +61,15 @@ resource "aws_iam_role_policy" "lambda" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
+    Statement = concat(
+      [{
         Sid      = "Logs"
         Effect   = "Allow"
         Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
-        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-*:*"
-      },
-      {
-        Sid      = "ActionPermissions"
-        Effect   = "Allow"
-        Action   = each.value
-        Resource = "*"
-      }
-    ]
+        Resource = "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-*:*"
+      }],
+      each.value.statements,
+    )
   })
 }
 
@@ -92,8 +88,8 @@ resource "aws_lambda_function" "action" {
   runtime          = "python3.13"
   filename         = data.archive_file.lambda[each.key].output_path
   source_code_hash = data.archive_file.lambda[each.key].output_base64sha256
-  timeout          = 60
-  memory_size      = 256
+  timeout          = var.lambda_timeout_seconds
+  memory_size      = var.lambda_memory_mb
 
   environment {
     variables = {
@@ -101,6 +97,9 @@ resource "aws_lambda_function" "action" {
     }
   }
 
-  depends_on = [aws_cloudwatch_log_group.lambda]
-  tags       = local.common_tags
+  depends_on = [
+    aws_cloudwatch_log_group.lambda,
+    aws_iam_role_policy.lambda,
+  ]
+  tags = local.common_tags
 }

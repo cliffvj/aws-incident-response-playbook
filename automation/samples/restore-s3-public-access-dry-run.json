@@ -1,0 +1,53 @@
+{
+  "bucket_name": "example-incident-bucket-123",
+  "confirm_restore": true,
+  "dry_run": true,
+  "expected_account_id": "111122223333",
+  "incident_id": "INC-2026-0003",
+  "reason": "Restore reviewed pre-containment bucket-level Block Public Access state.",
+  "region": "us-east-1",
+  "requested_by": "analyst@example.invalid",
+  "rollback_manifest": {
+    "action": "contain_s3_public_access",
+    "captured_at": "2026-07-24T17:29:16.927793+00:00",
+    "checksum_sha256": "16a09b10912a58c5cd82673a41e60d0087bafa0bf34b7dfed9b8a12336299084",
+    "incident_id": "INC-2026-0003",
+    "manifest_version": 1,
+    "metadata": {
+      "containment": "bucket-level block public access",
+      "policy_or_acl_modified": false
+    },
+    "resource": {
+      "account_id": "111122223333",
+      "id": "example-incident-bucket-123",
+      "region": "us-east-1",
+      "type": "s3-bucket"
+    },
+    "state": {
+      "acl": {
+        "Grants": [],
+        "Owner": {
+          "ID": "EXAMPLEOWNERID"
+        }
+      },
+      "ownership_controls": {
+        "Rules": [
+          {
+            "ObjectOwnership": "BucketOwnerEnforced"
+          }
+        ]
+      },
+      "policy": {
+        "document": null,
+        "present": false
+      },
+      "policy_status": {
+        "IsPublic": true
+      },
+      "public_access_block": {
+        "configuration": null,
+        "present": false
+      }
+    }
+  }
+}

@@ -2,13 +2,19 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "InspectAndDisableUserKey",
+      "Sid": "ReadAccessKeyLastUsed",
+      "Effect": "Allow",
+      "Action": "iam:GetAccessKeyLastUsed",
+      "Resource": "*"
+    },
+    {
+      "Sid": "InspectAndDisableNamedUserKeys",
       "Effect": "Allow",
       "Action": [
-        "iam:GetAccessKeyLastUsed",
+        "iam:ListAccessKeys",
         "iam:UpdateAccessKey"
       ],
-      "Resource": "arn:aws:iam::*:user/*"
+      "Resource": "arn:aws:iam::111122223333:user/incident-lab/*"
     }
   ]
 }

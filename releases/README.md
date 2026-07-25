@@ -4,7 +4,9 @@ This directory preserves release notes inside the repository. GitHub Releases pu
 
 | Version | Name | Status |
 |---|---|---|
-| [v2.0.0](v2.0.0.md) | Production Documentation | Current |
+| [v2.2.0](v2.2.0.md) | Response Actions | Current |
+| [v2.1.0](v2.1.0.md) | Automation Framework | Released |
+| [v2.0.0](v2.0.0.md) | Production Documentation | Released |
 | [v1.4.0](v1.4.0.md) | Decision Intelligence | Released |
 | [v1.3.0](v1.3.0.md) | Threat and Response Framework Alignment | Released |
 | [v1.2.0](v1.2.0.md) | Visual Documentation | Released |

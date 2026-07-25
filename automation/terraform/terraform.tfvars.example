@@ -1,4 +1,18 @@
-aws_region = "us-east-1"
-project_name = "aws-ir-lab"
-log_retention_days = 14
-tags = { Owner = "replace-me", Environment = "lab" }
+aws_region        = "us-east-1"
+project_name      = "aws-ir-lab"
+log_retention_days = 30
+lambda_timeout_seconds = 60
+lambda_memory_mb  = 256
+
+s3_bucket_arns = [
+  "arn:aws:s3:::replace-with-authorized-lab-bucket"
+]
+
+iam_user_arns = [
+  "arn:aws:iam::111122223333:user/incident-lab/*"
+]
+
+tags = {
+  Environment = "Lab"
+  Owner       = "SecurityEngineering"
+}
