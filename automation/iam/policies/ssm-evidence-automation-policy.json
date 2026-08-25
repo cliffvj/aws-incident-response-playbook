@@ -1,0 +1,62 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InspectManagedNode",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:DescribeInstanceInformation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RunApprovedCollectionDocuments",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:SendCommand"
+      ],
+      "Resource": [
+        "arn:aws:ssm:REPLACE_REGION::document/AWS-RunShellScript",
+        "arn:aws:ssm:REPLACE_REGION::document/AWS-RunPowerShellScript",
+        "arn:aws:ec2:REPLACE_REGION:REPLACE_ACCOUNT_ID:instance/*"
+      ]
+    },
+    {
+      "Sid": "ReadRunCommandStatus",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetCommandInvocation",
+        "ssm:ListCommandInvocations"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadEvidenceObjectsForHashing",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::REPLACE_EVIDENCE_BUCKET"
+    },
+    {
+      "Sid": "ReadWriteEvidenceManifest",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::REPLACE_EVIDENCE_BUCKET/incidents/*"
+    },
+    {
+      "Sid": "UseEvidenceKey",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "REPLACE_EVIDENCE_KMS_KEY_ARN"
+    }
+  ]
+}

@@ -52,3 +52,38 @@ output "approver_policy_arn" {
   value       = aws_iam_policy.step_functions_approver.arn
   description = "Standalone callback policy for an explicitly authorized approver identity. It is not attached automatically."
 }
+
+output "ssm_linux_document_name" {
+  value       = aws_ssm_document.collect_linux_evidence.name
+  description = "Systems Manager Automation document for read-only Linux evidence collection."
+}
+
+output "ssm_windows_document_name" {
+  value       = aws_ssm_document.collect_windows_evidence.name
+  description = "Systems Manager Automation document for read-only Windows evidence collection."
+}
+
+output "ssm_automation_role_arn" {
+  value       = aws_iam_role.ssm_automation.arn
+  description = "Role assumed by the Systems Manager investigation Automation documents."
+}
+
+output "ssm_evidence_bucket_name" {
+  value       = aws_s3_bucket.ssm_evidence.bucket
+  description = "Versioned SSE-KMS evidence bucket receiving Run Command output and integrity manifests."
+}
+
+output "ssm_evidence_kms_key_arn" {
+  value       = aws_kms_key.ssm_evidence.arn
+  description = "Customer-managed KMS key used for SSM investigation evidence."
+}
+
+output "ssm_evidence_node_policy_arn" {
+  value       = aws_iam_policy.ssm_evidence_node.arn
+  description = "Managed policy to attach only to authorized SSM managed-node roles that must write investigation output."
+}
+
+output "ssm_investigation_operator_policy_arn" {
+  value       = aws_iam_policy.ssm_investigation_operator.arn
+  description = "Reference responder policy for starting investigation Automation and reading evidence. Not attached automatically."
+}

@@ -85,6 +85,19 @@ flowchart TD
 6. Avoid storing secrets in command parameters or shell history and restrict session access through IAM.
 7. Validate the instance baseline, agent health, logging, and application operation after remediation.
 
+
+## Phase 3 automation implementation
+
+Phase 3 Commit 4 implements the read-only collection portion of this runbook as Systems Manager Automation documents:
+
+- [Systems Manager evidence collection](../automation/ssm/README.md)
+- [Linux collection document](../automation/ssm/collect-linux-evidence.json)
+- [Windows collection document](../automation/ssm/collect-windows-evidence.json)
+- [Collection scope and exclusions](../automation/ssm/collection-scope.md)
+- [Evidence integrity verifier](../automation/scripts/verify_evidence_manifest.py)
+
+The Automation workflow checks that the node is managed, `Online`, and on the expected platform; runs bounded read-only collection through Run Command; stores output in an encrypted/versioned evidence bucket; and creates a SHA-256 integrity manifest. Containment and host remediation remain separate actions requiring their own approval.
+
 ## AWS CLI starting points
 
 ```bash

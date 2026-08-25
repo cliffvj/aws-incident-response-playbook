@@ -1,0 +1,17 @@
+{
+  "AutomationAssumeRole": [
+    "arn:aws:iam::111122223333:role/aws-ir-lab-ssm-automation-role"
+  ],
+  "InstanceId": [
+    "i-0fedcba9876543210"
+  ],
+  "IncidentId": [
+    "IR-2026-0002"
+  ],
+  "EvidenceBucket": [
+    "aws-ir-lab-111122223333-us-east-1-ssm-evidence"
+  ],
+  "EvidencePrefix": [
+    "incidents"
+  ]
+}

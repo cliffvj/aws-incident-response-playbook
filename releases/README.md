@@ -4,7 +4,8 @@ This directory preserves release notes inside the repository. GitHub Releases pu
 
 | Version | Name | Status |
 |---|---|---|
-| [v2.3.0](v2.3.0.md) | Orchestrated Response | Current |
+| [v2.4.0](v2.4.0.md) | SSM Investigation | Current |
+| [v2.3.0](v2.3.0.md) | Orchestrated Response | Released |
 | [v2.2.0](v2.2.0.md) | Response Actions | Released |
 | [v2.1.0](v2.1.0.md) | Automation Framework | Released |
 | [v2.0.0](v2.0.0.md) | Production Documentation | Released |

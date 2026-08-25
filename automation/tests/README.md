@@ -15,3 +15,16 @@ python3 automation/scripts/package_lambdas.py
 Commit 3 adds structural tests for the Step Functions definition. They verify transition targets, callback task-token states, duplicate-event locking, and the separation of live containment/rollback from approval decisions.
 
 These tests do not replace an authorized AWS integration exercise. Terraform validation and a dry-run state-machine execution should pass before any live approval path is attempted.
+
+## Systems Manager document validation
+
+Phase 3 Commit 4 adds `test_ssm_documents.py` and `automation/scripts/validate_ssm_documents.py`. They enforce:
+
+- Automation schema version `0.3`;
+- required incident, instance, evidence, and assume-role parameters;
+- Online + platform preflight logic;
+- Run Command S3 output configuration;
+- SHA-256 evidence-manifest finalization; and
+- absence of a small denylist of obviously mutating host commands.
+
+These are structural safety checks, not a substitute for an authorized AWS lab execution.

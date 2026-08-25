@@ -26,3 +26,10 @@ step_functions_include_execution_data = false
 # explicitly authorized approval channel and you understand that task tokens
 # will be delivered there.
 approval_email_endpoint = null
+
+# Systems Manager investigation evidence. Leave bucket name null to derive a
+# globally unique lab name from project/account/Region. Adjust retention to your
+# authorized evidence policy before deploying outside a disposable lab.
+ssm_evidence_bucket_name               = null
+ssm_evidence_retention_days            = 90
+ssm_evidence_noncurrent_retention_days = 30
