@@ -28,6 +28,7 @@ jobs:
       - run: python automation/scripts/validate_json.py
       - run: python automation/scripts/check_action_contracts.py
       - run: python automation/scripts/validate_state_machines.py
+      - run: python automation/scripts/validate_ssm_documents.py
       - run: python automation/scripts/package_lambdas.py
 
   terraform:

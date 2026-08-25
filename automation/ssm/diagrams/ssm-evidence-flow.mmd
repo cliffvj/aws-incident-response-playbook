@@ -1,0 +1,11 @@
+flowchart TD
+    OP[Authorized responder] --> START[Start SSM Automation]
+    START --> PRE[Preflight managed-node status]
+    PRE -->|Not managed / offline / wrong OS| STOP[Abort safely]
+    PRE -->|Online + supported OS| CMD[Run read-only collection command]
+    CMD --> OUT[SSM Agent uploads stdout/stderr to S3]
+    OUT --> ENC[S3 default SSE-KMS encryption]
+    ENC --> HASH[Automation finalizer reads objects and computes SHA-256]
+    HASH --> MAN[Write integrity-manifest.json]
+    MAN --> REV[Responder retrieves and verifies evidence]
+    REV --> IR[Link execution + manifest to incident record]

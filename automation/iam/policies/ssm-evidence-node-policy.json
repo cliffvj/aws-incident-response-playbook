@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WriteRunCommandEvidence",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:GetEncryptionConfiguration"
+      ],
+      "Resource": "arn:aws:s3:::REPLACE_EVIDENCE_BUCKET"
+    },
+    {
+      "Sid": "PutRunCommandEvidence",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": "arn:aws:s3:::REPLACE_EVIDENCE_BUCKET/incidents/*"
+    },
+    {
+      "Sid": "UseEvidenceKeyForWrites",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "REPLACE_EVIDENCE_KMS_KEY_ARN"
+    }
+  ]
+}

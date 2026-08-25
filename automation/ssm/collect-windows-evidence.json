@@ -1,0 +1,111 @@
+{
+  "description": "Read-only Windows host evidence collection for authorized incident response. Stores Run Command output in S3 and creates a SHA-256 integrity manifest.",
+  "schemaVersion": "0.3",
+  "assumeRole": "{{AutomationAssumeRole}}",
+  "parameters": {
+    "AutomationAssumeRole": {
+      "type": "String",
+      "description": "ARN of the IAM role that Systems Manager Automation assumes for preflight, command execution, and manifest creation."
+    },
+    "InstanceId": {
+      "type": "String",
+      "description": "Authorized EC2 instance ID to investigate.",
+      "allowedPattern": "^i-[0-9a-fA-F]{8}([0-9a-fA-F]{9})?$"
+    },
+    "IncidentId": {
+      "type": "String",
+      "description": "Incident correlation identifier used in evidence prefixes and manifests.",
+      "allowedPattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$"
+    },
+    "EvidenceBucket": {
+      "type": "String",
+      "description": "S3 bucket receiving Run Command stdout/stderr and the integrity manifest."
+    },
+    "EvidencePrefix": {
+      "type": "String",
+      "default": "incidents",
+      "description": "Top-level S3 prefix. Keep it free of secrets and customer data.",
+      "allowedValues": [
+        "incidents"
+      ]
+    }
+  },
+  "mainSteps": [
+    {
+      "name": "PreflightManagedNode",
+      "action": "aws:executeScript",
+      "maxAttempts": 1,
+      "timeoutSeconds": 60,
+      "onFailure": "Abort",
+      "inputs": {
+        "Runtime": "python3.12",
+        "Handler": "preflight",
+        "InputPayload": {
+          "instance_id": "{{InstanceId}}",
+          "expected_platform": "Windows"
+        },
+        "Script": "def preflight(events, context):\n    import boto3\n\n    instance_id = events[\"instance_id\"]\n    expected_platform = events[\"expected_platform\"]\n    ssm = boto3.client(\"ssm\")\n    response = ssm.describe_instance_information(\n        Filters=[{\"Key\": \"InstanceIds\", \"Values\": [instance_id]}]\n    )\n    nodes = response.get(\"InstanceInformationList\", [])\n    if len(nodes) != 1:\n        raise RuntimeError(\n            f\"{instance_id} is not returned as an SSM managed node in this Region\"\n        )\n\n    node = nodes[0]\n    ping_status = node.get(\"PingStatus\", \"Unknown\")\n    platform_type = node.get(\"PlatformType\", \"Unknown\")\n    if ping_status != \"Online\":\n        raise RuntimeError(\n            f\"{instance_id} is not Online in Systems Manager (PingStatus={ping_status})\"\n        )\n    if platform_type != expected_platform:\n        raise RuntimeError(\n            f\"{instance_id} platform is {platform_type}; expected {expected_platform}\"\n        )\n\n    return {\n        \"instance_id\": instance_id,\n        \"ping_status\": ping_status,\n        \"platform_type\": platform_type,\n        \"platform_name\": node.get(\"PlatformName\", \"\"),\n        \"platform_version\": node.get(\"PlatformVersion\", \"\"),\n        \"agent_version\": node.get(\"AgentVersion\", \"\"),\n        \"last_ping\": str(node.get(\"LastPingDateTime\", \"\")),\n    }"
+      },
+      "outputs": [
+        {
+          "Name": "Payload",
+          "Selector": "$.Payload",
+          "Type": "StringMap"
+        }
+      ]
+    },
+    {
+      "name": "CollectWindowsEvidence",
+      "action": "aws:runCommand",
+      "maxAttempts": 1,
+      "timeoutSeconds": 900,
+      "onFailure": "Abort",
+      "inputs": {
+        "DocumentName": "AWS-RunPowerShellScript",
+        "InstanceIds": [
+          "{{InstanceId}}"
+        ],
+        "Parameters": {
+          "commands": [
+            "$ErrorActionPreference = \"Continue\"\nfunction Section([string]$Name) { Write-Output \"`n===== $Name =====\" }\n\nSection \"collection_header\"\nWrite-Output (\"collection_time_utc=\" + [DateTime]::UtcNow.ToString(\"o\"))\nWrite-Output \"instance_id={{InstanceId}}\"\nWrite-Output \"incident_id={{IncidentId}}\"\nWrite-Output \"automation_execution_id={{automation:EXECUTION_ID}}\"\nWrite-Output (\"computer_name=\" + $env:COMPUTERNAME)\n\nSection \"operating_system\"\nGet-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber,OSArchitecture,LastBootUpTime | Format-List\nGet-ComputerInfo -Property WindowsProductName,WindowsVersion,OsBuildNumber,OsArchitecture,CsDomain,CsPartOfDomain | Format-List\n\nSection \"processes\"\nGet-CimInstance Win32_Process | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CreationDate | Sort-Object ProcessId | Format-Table -AutoSize\n\nSection \"network_addresses_routes\"\nGet-NetIPAddress | Sort-Object InterfaceIndex,AddressFamily | Format-Table -AutoSize\nGet-NetRoute | Sort-Object InterfaceIndex,DestinationPrefix | Format-Table -AutoSize\nGet-NetTCPConnection | Sort-Object State,LocalPort | Format-Table -AutoSize\n\nSection \"services\"\nGet-Service | Sort-Object Status,Name | Format-Table Status,Name,DisplayName -AutoSize\n\nSection \"packages_and_updates\"\nGet-HotFix | Sort-Object InstalledOn | Format-Table -AutoSize\n$UninstallRoots = @(\n  'HKLM:\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Uninstall\\\\*',\n  'HKLM:\\Software\\\\WOW6432Node\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Uninstall\\\\*'\n)\nGet-ItemProperty $UninstallRoots -ErrorAction SilentlyContinue |\n  Where-Object DisplayName |\n  Select-Object DisplayName,DisplayVersion,Publisher,InstallDate |\n  Sort-Object DisplayName |\n  Format-Table -AutoSize\n\nSection \"users_and_logons\"\nGet-LocalUser | Select-Object Name,Enabled,LastLogon,PasswordLastSet,SID | Format-Table -AutoSize\nwhoami /all\nquser 2>&1\n\nSection \"scheduled_tasks\"\nGet-ScheduledTask | Select-Object TaskPath,TaskName,State,Author | Sort-Object TaskPath,TaskName | Format-Table -AutoSize\n\nSection \"selected_event_logs\"\n$Start = (Get-Date).AddHours(-24)\nforeach ($LogName in @('System','Application','Security')) {\n  Write-Output \"--- $LogName ---\"\n  Get-WinEvent -FilterHashtable @{LogName=$LogName; StartTime=$Start} -MaxEvents 750 -ErrorAction SilentlyContinue |\n    Select-Object TimeCreated,Id,LevelDisplayName,ProviderName,Message |\n    Format-List\n}\n\nSection \"collection_footer\"\nWrite-Output (\"collection_end_utc=\" + [DateTime]::UtcNow.ToString(\"o\"))"
+          ]
+        },
+        "OutputS3BucketName": "{{EvidenceBucket}}",
+        "OutputS3KeyPrefix": "{{EvidencePrefix}}/{{IncidentId}}/{{InstanceId}}/{{automation:EXECUTION_ID}}/windows"
+      }
+    },
+    {
+      "name": "FinalizeIntegrityManifest",
+      "action": "aws:executeScript",
+      "maxAttempts": 1,
+      "timeoutSeconds": 600,
+      "onFailure": "Abort",
+      "inputs": {
+        "Runtime": "python3.12",
+        "Handler": "build_manifest",
+        "InputPayload": {
+          "bucket": "{{EvidenceBucket}}",
+          "prefix": "{{EvidencePrefix}}/{{IncidentId}}/{{InstanceId}}/{{automation:EXECUTION_ID}}/windows",
+          "incident_id": "{{IncidentId}}",
+          "instance_id": "{{InstanceId}}",
+          "platform": "Windows",
+          "execution_id": "{{automation:EXECUTION_ID}}",
+          "command_id": "{{CollectWindowsEvidence.CommandId}}"
+        },
+        "Script": "def build_manifest(events, context):\n    import boto3\n    import hashlib\n    import json\n    from datetime import datetime, timezone\n\n    bucket = events[\"bucket\"]\n    prefix = events[\"prefix\"].rstrip(\"/\") + \"/\"\n    s3 = boto3.client(\"s3\")\n\n    paginator = s3.get_paginator(\"list_objects_v2\")\n    objects = []\n    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):\n        for item in page.get(\"Contents\", []):\n            key = item[\"Key\"]\n            if key.endswith(\"/integrity-manifest.json\"):\n                continue\n            response = s3.get_object(Bucket=bucket, Key=key)\n            digest = hashlib.sha256()\n            body = response[\"Body\"]\n            while True:\n                chunk = body.read(1024 * 1024)\n                if not chunk:\n                    break\n                digest.update(chunk)\n            objects.append({\n                \"key\": key,\n                \"size\": int(response.get(\"ContentLength\", item.get(\"Size\", 0))),\n                \"etag\": str(response.get(\"ETag\", \"\")).strip('\"'),\n                \"version_id\": response.get(\"VersionId\", \"\"),\n                \"last_modified\": response.get(\"LastModified\", item.get(\"LastModified\")).isoformat(),\n                \"sha256\": digest.hexdigest(),\n            })\n\n    objects.sort(key=lambda value: value[\"key\"])\n    canonical_index = json.dumps(objects, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")\n    manifest = {\n        \"schema\": \"aws-ir-evidence-manifest/v1\",\n        \"incident_id\": events[\"incident_id\"],\n        \"instance_id\": events[\"instance_id\"],\n        \"platform\": events[\"platform\"],\n        \"automation_execution_id\": events[\"execution_id\"],\n        \"run_command_id\": events[\"command_id\"],\n        \"collection_completed_utc\": datetime.now(timezone.utc).isoformat(),\n        \"s3_bucket\": bucket,\n        \"s3_prefix\": prefix,\n        \"evidence_object_count\": len(objects),\n        \"evidence_index_sha256\": hashlib.sha256(canonical_index).hexdigest(),\n        \"objects\": objects,\n    }\n    manifest_key = prefix + \"integrity-manifest.json\"\n    s3.put_object(\n        Bucket=bucket,\n        Key=manifest_key,\n        Body=(json.dumps(manifest, indent=2, sort_keys=True) + \"\\\\n\").encode(\"utf-8\"),\n        ContentType=\"application/json\",\n    )\n    return {\n        \"manifest_uri\": f\"s3://{bucket}/{manifest_key}\",\n        \"object_count\": str(len(objects)),\n        \"evidence_index_sha256\": manifest[\"evidence_index_sha256\"],\n    }"
+      },
+      "outputs": [
+        {
+          "Name": "Payload",
+          "Selector": "$.Payload",
+          "Type": "StringMap"
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    "PreflightManagedNode.Payload",
+    "CollectWindowsEvidence.CommandId",
+    "FinalizeIntegrityManifest.Payload"
+  ]
+}

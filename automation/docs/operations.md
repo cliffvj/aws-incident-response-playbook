@@ -35,3 +35,17 @@
 6. Set `dry_run: false`, invoke, verify, and document.
 
 Do not retry a mutating action blindly. First determine whether the prior invocation succeeded, partially succeeded, or timed out after AWS accepted the API request.\n## Step Functions operations\n\nUse `event_id` as the one-time execution request identifier and `incident_id` as the broader case identifier. During review, correlate Step Functions execution ARN, DynamoDB status, Lambda request logs, CloudTrail, evidence snapshots, approval identity, and returned rollback manifests.\n\nNever retry a failed execution by blindly reusing the same `event_id`; inspect the current resource state first and then create a new event ID if a rerun is justified.\n
+
+## Systems Manager investigation operations
+
+Use `automation/scripts/start_ssm_investigation.sh` for a controlled lab execution. Record the returned Automation execution ID in the incident record. A successful collection is not complete until `FinalizeIntegrityManifest` succeeds and the responder can retrieve `integrity-manifest.json`.
+
+Recommended operator sequence:
+
+1. verify AWS account, Region, instance ID, incident ID, and change/evidence authorization;
+2. verify the target is `Online` in Systems Manager;
+3. start the platform-specific Automation document;
+4. watch `get-automation-execution` for failed or timed-out steps;
+5. retrieve the manifest and run `verify_evidence_manifest.py`;
+6. link the S3 prefix, Automation execution ID, Run Command ID, and manifest hash to the incident record;
+7. perform containment only through a separately approved workflow.

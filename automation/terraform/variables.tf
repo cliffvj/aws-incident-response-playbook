@@ -69,3 +69,32 @@ variable "step_functions_include_execution_data" {
   description = "Whether Step Functions CloudWatch Logs include execution input/output. Keep false by default because approval task tokens and incident context are sensitive."
   default     = false
 }
+
+variable "ssm_evidence_bucket_name" {
+  type        = string
+  description = "Optional globally unique S3 bucket name for SSM investigation evidence. When null, a name is derived from project, account, and Region."
+  default     = null
+  nullable    = true
+}
+
+variable "ssm_evidence_retention_days" {
+  type        = number
+  description = "Days before current SSM investigation evidence objects expire. Adjust to the authorized lab retention policy."
+  default     = 90
+
+  validation {
+    condition     = var.ssm_evidence_retention_days >= 1
+    error_message = "ssm_evidence_retention_days must be at least 1 day."
+  }
+}
+
+variable "ssm_evidence_noncurrent_retention_days" {
+  type        = number
+  description = "Days before noncurrent versions of SSM investigation evidence expire."
+  default     = 30
+
+  validation {
+    condition     = var.ssm_evidence_noncurrent_retention_days >= 1
+    error_message = "ssm_evidence_noncurrent_retention_days must be at least 1 day."
+  }
+}

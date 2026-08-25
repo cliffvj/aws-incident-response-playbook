@@ -8,7 +8,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- Systems Manager evidence and investigation automation for Phase 3 Commit 4.
+- EventBridge and CloudWatch detection-to-response integration for Phase 3 Commit 5.
+
+## [2.4.0] — 2026-08-25
+
+### Added
+
+- Read-only Linux and Windows Systems Manager Automation documents for EC2 host investigation without opening SSH or RDP.
+- Managed-node preflight that fails closed when the instance is unmanaged, not `Online`, or on the wrong platform.
+- Linux collection for process, network, service, package, user/logon, scheduled-task, kernel/mount, recent temporary-file metadata, and bounded selected logs.
+- Windows collection for process, network, service, hotfix/software, local-user/session, scheduled-task, and bounded System/Application/Security event metadata.
+- Versioned S3 evidence bucket with Block Public Access, TLS-only bucket policy, SSE-KMS default encryption, KMS key rotation, S3 Bucket Keys, and configurable lifecycle retention.
+- Post-collection SHA-256 integrity manifest covering every Run Command output object, collection metadata, Automation execution ID, and Run Command ID.
+- Local evidence-manifest verifier, SSM execution helper, structural SSM-document validator, samples, collection-scope documentation, and Mermaid evidence-flow diagram.
+- Dedicated Automation role, supplemental managed-node evidence-write policy, and responder start/read policy; the latter two are not attached automatically.
+- Terraform resources and outputs for evidence storage, KMS, IAM, and the Linux/Windows Automation documents.
+
+### Changed
+
+- Automation documentation now treats Systems Manager as a separate host-evidence plane, independent from Step Functions containment/remediation.
+- Scenario 14 now links directly to the deployable Phase 3 investigation implementation.
+- GitHub Actions automation validation now checks SSM Automation document safety/structure.
+
+### Safety
+
+- Host collection is read-only by design and does not stop services, patch, delete files, quarantine the instance, or change network controls.
+- Linux/Windows collection aborts before Run Command when SSM management status, connectivity, or platform checks fail.
+- Evidence is partitioned by incident ID, instance ID, Automation execution ID, and platform.
+- Sensitive host output is protected with access-controlled SSE-KMS storage; evidence-write and responder-read policies are not broadly attached.
+- Linux is the primary lab-validation target; Windows requires the same account-specific testing before broader use; macOS remains unsupported.
+
+### Validation
+
+- JSON validation covers both SSM Automation documents and samples.
+- SSM structural validation enforces preflight, Run Command S3 output, integrity-manifest finalization, and a denylist of obvious mutating commands.
+- Unit tests cover document platform selection, preflight checks, read-only collection shape, and SHA-256 finalization.
+- Terraform formatting and validation remain enforced by GitHub Actions and documented for local execution.
 
 ## [2.3.0] — 2026-08-25
 

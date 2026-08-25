@@ -15,3 +15,11 @@ The security groups and S3 API configuration changes themselves are not the prim
 7. Review retained CloudWatch log groups, KMS keys pending deletion, snapshots, and manual resource changes.
 
 Terraform does not delete snapshots created by the response Lambda, remove quarantine groups created at runtime, or reverse changes made to EC2, IAM, or S3 targets. Those are operational incident artifacts and must be handled under explicit recovery and evidence-retention decisions.\n## Orchestration cost notes\n\nCommit 3 can add Step Functions Standard Workflow transitions, open approval-wait executions, DynamoDB request/storage, approval SNS delivery, and Step Functions CloudWatch Logs. Live containment may also create EBS snapshots. Keep lab executions bounded, use short approval timeouts, and remove the Terraform deployment when finished. Evidence snapshots must be retained or deleted according to incident policy rather than blindly with infrastructure cleanup.\n
+
+## SSM investigation evidence
+
+Commit 4 adds cost-bearing S3 storage, KMS requests/key charges, Systems Manager Automation/Run Command usage where applicable, and API activity. The dominant long-lived cost in a lab can become retained evidence rather than the Automation execution itself.
+
+Terraform defaults to 90-day current-object and 30-day noncurrent-version retention for the SSM evidence bucket. Change these values only to match your authorized lab policy. Because the bucket is versioned, deleting the latest object alone does not necessarily remove prior versions.
+
+A non-empty evidence bucket can block `terraform destroy`. That is intentional. Decide evidence disposition first; do not erase artifacts merely to complete infrastructure teardown.

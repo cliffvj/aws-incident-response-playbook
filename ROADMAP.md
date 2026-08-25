@@ -1,7 +1,7 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
 > **Current milestone:** Phase 3 — Response automation
-> **Current release:** `v2.3.0 — Orchestrated Response`
+> **Current release:** `v2.4.0 — SSM Investigation`
 > **Roadmap status date:** 2026-08-25
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
@@ -82,6 +82,7 @@ Every phase follows the same core principles:
 | `v2.1.0` | Phase 3 Commit 1: dry-run-first response automation framework |
 | `v2.2.0` | Phase 3 Commit 2: expanded, reversible Lambda response actions |
 | `v2.3.0` | Phase 3 Commit 3: Step Functions incident orchestration and approval boundaries |
+| `v2.4.0` | Phase 3 Commit 4: Systems Manager read-only evidence collection and integrity manifests |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -215,7 +216,7 @@ Transform the foundation into a professionally structured, navigable, source-bac
 # Phase 3 — Response automation
 
 **Status:** In progress
-**Current release:** `v2.3.0 — Orchestrated Response`
+**Current release:** `v2.4.0 — SSM Investigation`
 **Planned completion release:** `v3.0.0`
 
 ## Objective
@@ -315,20 +316,20 @@ The state machine must safely stop at approval boundaries, preserve completed ev
 
 ## Commit 4 — Systems Manager evidence and investigation automation
 
-**Status:** Planned  
-**Target release:** `v2.4.0 — SSM Investigation`
+**Status:** Complete
+**Release:** `v2.4.0 — SSM Investigation`
 
 ### Planned scope
 
-- [ ] Add Systems Manager Automation documents for supported EC2 investigation tasks.
-- [ ] Collect process, network, service, package, user, scheduled-task, and selected log metadata.
-- [ ] Support encrypted output storage and incident-specific prefixes.
-- [ ] Add operating-system checks and documented support boundaries.
-- [ ] Add execution-role and instance-role least-privilege policies.
-- [ ] Add failure behavior for unmanaged, offline, or unsupported instances.
-- [ ] Add evidence-integrity metadata and collection timestamps.
-- [ ] Add authorized lab tests for Linux-first workflows and clearly document platform limitations.
-- [ ] Add cleanup and retention guidance for collected artifacts.
+- [x] Add Systems Manager Automation documents for supported EC2 investigation tasks.
+- [x] Collect process, network, service, package, user, scheduled-task, and selected log metadata.
+- [x] Support encrypted output storage and incident-specific prefixes.
+- [x] Add operating-system checks and documented support boundaries.
+- [x] Add execution-role and instance-role least-privilege policies.
+- [x] Add failure behavior for unmanaged, offline, or unsupported instances.
+- [x] Add evidence-integrity metadata and collection timestamps.
+- [x] Add an authorized Linux-first lab-test procedure and clearly document platform limitations.
+- [x] Add cleanup and retention guidance for collected artifacts.
 
 ### Safety requirements
 
@@ -788,12 +789,12 @@ The project prioritizes transparent, modular, production-inspired patterns that 
 
 # Immediate next milestone
 
-## Phase 3 — Commit 4: Systems Manager evidence and investigation automation
+## Phase 3 — Commit 5: EventBridge and CloudWatch detection-to-response integration
 
-The next package will add read-only-first AWS Systems Manager investigation workflows for supported EC2 instances, encrypted evidence output, platform checks, failure reporting, least-privilege roles, and lab validation without requiring inbound SSH or RDP.
+The next package will normalize selected CloudTrail, GuardDuty, Security Hub, AWS Config, and CloudWatch events into the automation event contract; route them by severity, account, Region, resource type, and response mode; add dead-letter/replay and loop-prevention guidance; and retain notify-only or approval-required defaults.
 
 Planned release target:
 
 ```text
-v2.4.0 — SSM Investigation
+v2.5.0 — Detection-to-Response
 ```

@@ -1,0 +1,111 @@
+{
+  "description": "Read-only Linux host evidence collection for authorized incident response. Stores Run Command output in S3 and creates a SHA-256 integrity manifest.",
+  "schemaVersion": "0.3",
+  "assumeRole": "{{AutomationAssumeRole}}",
+  "parameters": {
+    "AutomationAssumeRole": {
+      "type": "String",
+      "description": "ARN of the IAM role that Systems Manager Automation assumes for preflight, command execution, and manifest creation."
+    },
+    "InstanceId": {
+      "type": "String",
+      "description": "Authorized EC2 instance ID to investigate.",
+      "allowedPattern": "^i-[0-9a-fA-F]{8}([0-9a-fA-F]{9})?$"
+    },
+    "IncidentId": {
+      "type": "String",
+      "description": "Incident correlation identifier used in evidence prefixes and manifests.",
+      "allowedPattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$"
+    },
+    "EvidenceBucket": {
+      "type": "String",
+      "description": "S3 bucket receiving Run Command stdout/stderr and the integrity manifest."
+    },
+    "EvidencePrefix": {
+      "type": "String",
+      "default": "incidents",
+      "description": "Top-level S3 prefix. Keep it free of secrets and customer data.",
+      "allowedValues": [
+        "incidents"
+      ]
+    }
+  },
+  "mainSteps": [
+    {
+      "name": "PreflightManagedNode",
+      "action": "aws:executeScript",
+      "maxAttempts": 1,
+      "timeoutSeconds": 60,
+      "onFailure": "Abort",
+      "inputs": {
+        "Runtime": "python3.12",
+        "Handler": "preflight",
+        "InputPayload": {
+          "instance_id": "{{InstanceId}}",
+          "expected_platform": "Linux"
+        },
+        "Script": "def preflight(events, context):\n    import boto3\n\n    instance_id = events[\"instance_id\"]\n    expected_platform = events[\"expected_platform\"]\n    ssm = boto3.client(\"ssm\")\n    response = ssm.describe_instance_information(\n        Filters=[{\"Key\": \"InstanceIds\", \"Values\": [instance_id]}]\n    )\n    nodes = response.get(\"InstanceInformationList\", [])\n    if len(nodes) != 1:\n        raise RuntimeError(\n            f\"{instance_id} is not returned as an SSM managed node in this Region\"\n        )\n\n    node = nodes[0]\n    ping_status = node.get(\"PingStatus\", \"Unknown\")\n    platform_type = node.get(\"PlatformType\", \"Unknown\")\n    if ping_status != \"Online\":\n        raise RuntimeError(\n            f\"{instance_id} is not Online in Systems Manager (PingStatus={ping_status})\"\n        )\n    if platform_type != expected_platform:\n        raise RuntimeError(\n            f\"{instance_id} platform is {platform_type}; expected {expected_platform}\"\n        )\n\n    return {\n        \"instance_id\": instance_id,\n        \"ping_status\": ping_status,\n        \"platform_type\": platform_type,\n        \"platform_name\": node.get(\"PlatformName\", \"\"),\n        \"platform_version\": node.get(\"PlatformVersion\", \"\"),\n        \"agent_version\": node.get(\"AgentVersion\", \"\"),\n        \"last_ping\": str(node.get(\"LastPingDateTime\", \"\")),\n    }"
+      },
+      "outputs": [
+        {
+          "Name": "Payload",
+          "Selector": "$.Payload",
+          "Type": "StringMap"
+        }
+      ]
+    },
+    {
+      "name": "CollectLinuxEvidence",
+      "action": "aws:runCommand",
+      "maxAttempts": 1,
+      "timeoutSeconds": 900,
+      "onFailure": "Abort",
+      "inputs": {
+        "DocumentName": "AWS-RunShellScript",
+        "InstanceIds": [
+          "{{InstanceId}}"
+        ],
+        "Parameters": {
+          "commands": [
+            "set -u\nexport LC_ALL=C\nsection() { printf '\\n===== %s =====\\n' \"$1\"; }\nrun_if() {\n  command_name=\"$1\"; shift\n  if command -v \"$command_name\" >/dev/null 2>&1; then\n    \"$@\" 2>&1 || printf '[command failed rc=%s] %s\\n' \"$?\" \"$*\"\n  else\n    printf '[not installed] %s\\n' \"$command_name\"\n  fi\n}\n\nsection \"collection_header\"\nprintf 'collection_time_utc=%s\\n' \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"\nprintf 'instance_id=%s\\n' \"{{InstanceId}}\"\nprintf 'incident_id=%s\\n' \"{{IncidentId}}\"\nprintf 'automation_execution_id=%s\\n' \"{{automation:EXECUTION_ID}}\"\nprintf 'hostname=%s\\n' \"$(hostname 2>/dev/null || true)\"\n\nsection \"operating_system\"\nuname -a 2>&1 || true\n[ -r /etc/os-release ] && cat /etc/os-release || true\nrun_if hostnamectl hostnamectl\nrun_if uptime uptime\n\nsection \"processes\"\nps -eo pid,ppid,user,group,stat,lstart,etime,comm,args --ww 2>&1 || true\n\nsection \"network_addresses_routes\"\nrun_if ip ip addr show\nrun_if ip ip route show table all\nrun_if ss ss -plant\nrun_if lsof lsof -nP -i\n\nsection \"services\"\nif command -v systemctl >/dev/null 2>&1; then\n  systemctl list-units --type=service --all --no-pager 2>&1 || true\n  systemctl list-unit-files --type=service --no-pager 2>&1 || true\nelse\n  run_if service service --status-all\nfi\n\nsection \"packages\"\nif command -v rpm >/dev/null 2>&1; then\n  rpm -qa --qf '%{NAME}\\t%{VERSION}-%{RELEASE}\\t%{INSTALLTIME:date}\\n' 2>&1 | sort || true\nelif command -v dpkg-query >/dev/null 2>&1; then\n  dpkg-query -W -f='${Package}\\t${Version}\\t${Architecture}\\n' 2>&1 | sort || true\nelif command -v apk >/dev/null 2>&1; then\n  apk info -vv 2>&1 | sort || true\nelse\n  printf '[no supported package inventory command found]\\n'\nfi\n\nsection \"users_and_logons\"\ngetent passwd 2>&1 || true\nrun_if who who -a\nrun_if w w\nrun_if last last -a -n 100\nrun_if lastlog lastlog\n\nsection \"scheduled_tasks\"\n[ -r /etc/crontab ] && cat /etc/crontab || true\nfor d in /etc/cron.d /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly; do\n  if [ -d \"$d\" ]; then\n    printf -- '--- %s ---\\n' \"$d\"\n    find \"$d\" -maxdepth 1 -type f -printf '%M %u %g %TY-%Tm-%TdT%TH:%TM:%TS %p\\n' 2>/dev/null | sort || true\n  fi\ndone\nif command -v systemctl >/dev/null 2>&1; then\n  systemctl list-timers --all --no-pager 2>&1 || true\nfi\nif command -v crontab >/dev/null 2>&1; then\n  cut -d: -f1 /etc/passwd 2>/dev/null | while read -r user; do\n    output=\"$(crontab -u \"$user\" -l 2>/dev/null || true)\"\n    if [ -n \"$output\" ]; then\n      printf -- '--- crontab user=%s ---\\n%s\\n' \"$user\" \"$output\"\n    fi\n  done\nfi\n\nsection \"kernel_mounts_modules\"\nrun_if mount mount\nrun_if df df -hT\nrun_if lsmod lsmod\n\nsection \"recent_file_metadata\"\nfor d in /tmp /var/tmp; do\n  [ -d \"$d\" ] || continue\n  find \"$d\" -xdev -maxdepth 2 -type f -mtime -2 -printf '%M %u %g %s %TY-%Tm-%TdT%TH:%TM:%TS %p\\n' 2>/dev/null | head -n 2000 || true\ndone\n\nsection \"selected_logs\"\nif command -v journalctl >/dev/null 2>&1; then\n  journalctl --since '-24 hours' --no-pager -n 2500 2>&1 || true\nfi\nfor f in /var/log/auth.log /var/log/secure /var/log/messages /var/log/syslog; do\n  if [ -r \"$f\" ]; then\n    printf -- '--- tail %s ---\\n' \"$f\"\n    tail -n 1000 \"$f\" 2>&1 || true\n  fi\ndone\n\nsection \"collection_footer\"\nprintf 'collection_end_utc=%s\\n' \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+          ]
+        },
+        "OutputS3BucketName": "{{EvidenceBucket}}",
+        "OutputS3KeyPrefix": "{{EvidencePrefix}}/{{IncidentId}}/{{InstanceId}}/{{automation:EXECUTION_ID}}/linux"
+      }
+    },
+    {
+      "name": "FinalizeIntegrityManifest",
+      "action": "aws:executeScript",
+      "maxAttempts": 1,
+      "timeoutSeconds": 600,
+      "onFailure": "Abort",
+      "inputs": {
+        "Runtime": "python3.12",
+        "Handler": "build_manifest",
+        "InputPayload": {
+          "bucket": "{{EvidenceBucket}}",
+          "prefix": "{{EvidencePrefix}}/{{IncidentId}}/{{InstanceId}}/{{automation:EXECUTION_ID}}/linux",
+          "incident_id": "{{IncidentId}}",
+          "instance_id": "{{InstanceId}}",
+          "platform": "Linux",
+          "execution_id": "{{automation:EXECUTION_ID}}",
+          "command_id": "{{CollectLinuxEvidence.CommandId}}"
+        },
+        "Script": "def build_manifest(events, context):\n    import boto3\n    import hashlib\n    import json\n    from datetime import datetime, timezone\n\n    bucket = events[\"bucket\"]\n    prefix = events[\"prefix\"].rstrip(\"/\") + \"/\"\n    s3 = boto3.client(\"s3\")\n\n    paginator = s3.get_paginator(\"list_objects_v2\")\n    objects = []\n    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):\n        for item in page.get(\"Contents\", []):\n            key = item[\"Key\"]\n            if key.endswith(\"/integrity-manifest.json\"):\n                continue\n            response = s3.get_object(Bucket=bucket, Key=key)\n            digest = hashlib.sha256()\n            body = response[\"Body\"]\n            while True:\n                chunk = body.read(1024 * 1024)\n                if not chunk:\n                    break\n                digest.update(chunk)\n            objects.append({\n                \"key\": key,\n                \"size\": int(response.get(\"ContentLength\", item.get(\"Size\", 0))),\n                \"etag\": str(response.get(\"ETag\", \"\")).strip('\"'),\n                \"version_id\": response.get(\"VersionId\", \"\"),\n                \"last_modified\": response.get(\"LastModified\", item.get(\"LastModified\")).isoformat(),\n                \"sha256\": digest.hexdigest(),\n            })\n\n    objects.sort(key=lambda value: value[\"key\"])\n    canonical_index = json.dumps(objects, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")\n    manifest = {\n        \"schema\": \"aws-ir-evidence-manifest/v1\",\n        \"incident_id\": events[\"incident_id\"],\n        \"instance_id\": events[\"instance_id\"],\n        \"platform\": events[\"platform\"],\n        \"automation_execution_id\": events[\"execution_id\"],\n        \"run_command_id\": events[\"command_id\"],\n        \"collection_completed_utc\": datetime.now(timezone.utc).isoformat(),\n        \"s3_bucket\": bucket,\n        \"s3_prefix\": prefix,\n        \"evidence_object_count\": len(objects),\n        \"evidence_index_sha256\": hashlib.sha256(canonical_index).hexdigest(),\n        \"objects\": objects,\n    }\n    manifest_key = prefix + \"integrity-manifest.json\"\n    s3.put_object(\n        Bucket=bucket,\n        Key=manifest_key,\n        Body=(json.dumps(manifest, indent=2, sort_keys=True) + \"\\\\n\").encode(\"utf-8\"),\n        ContentType=\"application/json\",\n    )\n    return {\n        \"manifest_uri\": f\"s3://{bucket}/{manifest_key}\",\n        \"object_count\": str(len(objects)),\n        \"evidence_index_sha256\": manifest[\"evidence_index_sha256\"],\n    }"
+      },
+      "outputs": [
+        {
+          "Name": "Payload",
+          "Selector": "$.Payload",
+          "Type": "StringMap"
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    "PreflightManagedNode.Payload",
+    "CollectLinuxEvidence.CommandId",
+    "FinalizeIntegrityManifest.Payload"
+  ]
+}

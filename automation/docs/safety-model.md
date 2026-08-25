@@ -46,3 +46,13 @@
 - Bucket-level settings are not the complete effective-access picture; account and organization controls may also apply.
 - Checksummed manifests are not cryptographically signed authorization records.
 - SNS publishing is notification, not durable case management.\n## Orchestration approval safety\n\nCommit 3 introduces a dedicated approval SNS topic. Callback task tokens are sensitive authorization material. Keep execution-data logging disabled by default, distribute tokens only to a dedicated approval endpoint, and attach callback permissions only to a strongly authenticated approver identity. Live containment and live rollback must not bypass their approval states.\n
+
+## SSM evidence-collection safeguards
+
+- Host investigation is separated from host containment/remediation.
+- Linux and Windows runbooks abort when the node is unmanaged/offline or the expected platform does not match.
+- Collection uses bounded output and selected logs rather than unrestricted recursive file capture.
+- Evidence identifiers must not contain secrets.
+- Run Command output is written to a versioned SSE-KMS S3 bucket and finalized with per-object SHA-256 values.
+- The generated managed-node write policy and responder read policy are not attached automatically.
+- SSM evidence output can contain sensitive process arguments, scheduled commands, and log content; access it as incident evidence.

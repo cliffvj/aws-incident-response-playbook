@@ -50,3 +50,26 @@ The restoration Lambda revalidates incident, account, Region, resource, checksum
 ## Logging
 
 Lambda functions write structured CloudWatch Logs. The state machine has a dedicated `/aws/vendedlogs/states/` log group. `step_functions_include_execution_data` defaults to `false` so approval task tokens and detailed incident inputs are not copied into CloudWatch execution logs by default.
+
+## Commit 4 — host evidence plane
+
+Systems Manager adds a separate host-evidence plane to the automation architecture:
+
+```text
+Responder
+   |
+   v
+SSM Automation execution role
+   |
+   +--> preflight: managed / Online / platform check
+   |
+   +--> aws:runCommand --> SSM Agent on target EC2
+   |                         |
+   |                         +--> stdout/stderr --> versioned SSE-KMS S3
+   |
+   +--> aws:executeScript --> read S3 objects --> SHA-256 manifest
+
+Containment/remediation is intentionally outside this plane.
+```
+
+This avoids coupling evidence collection to network-isolation or host-remediation logic and gives the incident record a distinct Automation execution ID and evidence prefix.

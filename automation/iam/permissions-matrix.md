@@ -29,3 +29,22 @@
 | Dedicated human approver role | `states:SendTaskSuccess`, `states:SendTaskFailure` | `Resource: "*"`; callback APIs rely on the task token and do not expose resource-level state-machine scoping |
 
 Do not attach the approver policy to the state-machine role, Lambda roles, or broad responder groups.
+
+## Systems Manager investigation
+
+| Principal / component | AWS actions | Resource scope | Why |
+|---|---|---|---|
+| SSM Automation execution role | `ssm:DescribeInstanceInformation` | `*` | Verify the node is managed, Online, and on the expected platform |
+| SSM Automation execution role | `ssm:SendCommand` | `AWS-RunShellScript`, `AWS-RunPowerShellScript`, and EC2 instances in the deployment account/Region | Run only the read-only host collection commands |
+| SSM Automation execution role | `ssm:GetCommandInvocation`, `ssm:ListCommandInvocations` | `*` | Observe command status/results |
+| SSM Automation execution role | `s3:ListBucket` | Evidence bucket and `incidents/*` prefix | Discover Run Command output for hashing |
+| SSM Automation execution role | `s3:GetObject`, `s3:GetObjectVersion`, `s3:PutObject` | Evidence `incidents/*` objects | Read command output and write integrity manifest |
+| SSM Automation execution role | `kms:Decrypt`, `kms:Encrypt`, `kms:GenerateDataKey` | Evidence KMS key | Hash encrypted objects and write the manifest |
+| Target EC2 instance role (supplemental policy) | `s3:GetBucketLocation`, `s3:GetEncryptionConfiguration`, `s3:PutObject`, `s3:AbortMultipartUpload` | Evidence bucket / `incidents/*` | Let SSM Agent write Run Command output |
+| Target EC2 instance role (supplemental policy) | `kms:Encrypt`, `kms:GenerateDataKey` | Evidence KMS key | Support SSE-KMS output writes |
+| Authorized responder | `ssm:StartAutomationExecution` | Only the two deployed investigation documents | Start evidence collection |
+| Authorized responder | `iam:PassRole` | Only the SSM Automation execution role, passed to `ssm.amazonaws.com` | Allow Automation to assume its reviewed role |
+| Authorized responder | `ssm:GetAutomationExecution`, execution-description APIs | `*` | Track progress and partial failures |
+| Authorized responder | `s3:ListBucket`, `s3:GetObject`, `s3:GetObjectVersion`, `kms:Decrypt` | Evidence bucket/key | Retrieve and verify evidence |
+
+> The target node still needs its normal Systems Manager managed-node permissions. The evidence-write policy supplements those permissions; it does not replace them.
