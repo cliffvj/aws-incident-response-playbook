@@ -1,58 +1,52 @@
 # Automation Architecture
 
-```mermaid
-flowchart LR
-    O[Authorized operator] --> E[Normalized action event]
-    E --> V[Validate identifiers, incident, account, and Region]
-    V --> R[Read current resource state]
-    R --> I{Requested state already present?}
-    I -->|Yes| N[Return no_change]
-    I -->|No| M[Create rollback manifest when supported]
-    M --> D{dry_run?}
-    D -->|true| P[Return planned change]
-    D -->|false| A[Call scoped AWS API]
-    A --> L[Structured CloudWatch log]
-    A --> S[Structured action result]
-    S --> C[Incident record and future orchestration]
-
-    RM[Validated rollback manifest] --> CV{confirm_restore true?}
-    CV -->|No| X[Reject]
-    CV -->|Yes| RV[Re-read current state]
-    RV --> RD{dry_run?}
-    RD -->|true| RP[Return restoration plan]
-    RD -->|false| RA[Restore captured state]
-```
-
-## Current boundaries
-
-- Actions are invoked directly by an authorized operator or deployment test.
-- No EventBridge, GuardDuty, Security Hub, or AWS Config finding triggers are connected yet.
-- No Step Functions approval gate exists yet; human authorization is procedural and represented by explicit invocation fields.
-- Rollback manifests are returned in Lambda output and must be stored by the operator. Durable manifest storage is planned for orchestration and deployment-productionization commits.
-- S3 containment modifies only bucket-level Block Public Access. Bucket policy and ACL data are captured but deliberately not changed.
-
-## Action flow examples
-
-### EC2
+Phase 3 Commit 3 adds orchestration without turning the project into autonomous remediation.
 
 ```mermaid
 flowchart LR
-    Q[Ensure ruleless quarantine SG] --> E[Collect EC2 metadata]
-    E --> S[Snapshot attached EBS volumes]
-    S --> I[Isolate every ENI]
-    I --> M[Store rollback manifest]
-    M --> V[Verify containment]
-    V --> R[Restore ENI security groups when authorized]
+    O[Authorized operator] --> SF[AWS Step Functions\nEC2 incident response]
+    SF --> DDB[(DynamoDB\nevent correlation)]
+    SF --> M[Metadata Lambda]
+    SF --> E[Evidence snapshot Lambda]
+    SF --> Q[Quarantine SG Lambda]
+    SF --> I[Isolation Lambda]
+    SF --> R[Restore SG Lambda]
+    SF --> N[Notification Lambda]
+    SF --> A[SNS approval topic\ncallback task token]
+    A --> H[Authorized approver]
+    H --> SF
+    N --> S[SNS incident topic]
 ```
 
-### S3
+## Boundaries
 
-```mermaid
-flowchart LR
-    I[Inspect Block Public Access, policy, ACL, ownership] --> D{Public exposure requires containment?}
-    D -->|No| C[Continue investigation]
-    D -->|Yes| B[Enable all bucket-level Block Public Access controls]
-    B --> M[Store rollback manifest]
-    M --> V[Verify effective access and application impact]
-    V --> R[Restore captured bucket-level setting only when approved]
+- **Action layer:** small Lambda functions retain single-action responsibilities.
+- **Orchestration layer:** Step Functions controls sequence, retries, approval, timeout, duplicate-event behavior, and terminal outcomes.
+- **Correlation layer:** DynamoDB stores one record per `event_id`; the same `incident_id` may span multiple response events.
+- **Approval layer:** a dedicated KMS-encrypted SNS topic carries callback requests. It is intentionally separate from routine notifications.
+- **Deployment layer:** Terraform provisions action and orchestration infrastructure but does not attach the approver policy to a human identity automatically.
+- **Detection layer:** no EventBridge, GuardDuty, Security Hub, or Config finding automatically starts containment in Commit 3.
+
+## Evidence and containment order
+
+Live containment follows:
+
+```text
+validate → correlate → metadata → EBS evidence snapshot → approval → quarantine SG → EC2 isolation → notify
 ```
+
+This preserves disk evidence before network containment. If a later action fails, the workflow stops and records the failure; it does not automatically delete snapshots or restore network state.
+
+## Rollback order
+
+Rollback follows:
+
+```text
+validate manifest → dry-run restore plan → approval (live only) → restore original SGs → notify
+```
+
+The restoration Lambda revalidates incident, account, Region, resource, checksum, and `confirm_restore: true`.
+
+## Logging
+
+Lambda functions write structured CloudWatch Logs. The state machine has a dedicated `/aws/vendedlogs/states/` log group. `step_functions_include_execution_data` defaults to `false` so approval task tokens and detailed incident inputs are not copied into CloudWatch execution logs by default.

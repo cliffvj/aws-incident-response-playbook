@@ -1,8 +1,8 @@
-aws_region        = "us-east-1"
-project_name      = "aws-ir-lab"
-log_retention_days = 30
+aws_region             = "us-east-1"
+project_name           = "aws-ir-lab"
+log_retention_days     = 30
 lambda_timeout_seconds = 60
-lambda_memory_mb  = 256
+lambda_memory_mb       = 256
 
 s3_bucket_arns = [
   "arn:aws:s3:::replace-with-authorized-lab-bucket"
@@ -16,3 +16,13 @@ tags = {
   Environment = "Lab"
   Owner       = "SecurityEngineering"
 }
+
+# Human approval controls. Keep execution data logging disabled because callback
+# task tokens and incident context can be sensitive.
+approval_timeout_seconds              = 3600
+step_functions_include_execution_data = false
+
+# Optional lab-only email subscription. Leave null unless the mailbox is an
+# explicitly authorized approval channel and you understand that task tokens
+# will be delivered there.
+approval_email_endpoint = null

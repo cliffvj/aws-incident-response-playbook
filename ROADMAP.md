@@ -1,8 +1,8 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
 > **Current milestone:** Phase 3 — Response automation
-> **Current release:** `v2.2.0 — Response Actions`
-> **Roadmap status date:** 2026-07-25
+> **Current release:** `v2.3.0 — Orchestrated Response`
+> **Roadmap status date:** 2026-08-25
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
 
@@ -81,6 +81,7 @@ Every phase follows the same core principles:
 | `v2.0.0` | Phase 2 completion: production documentation, navigation, references, and link validation |
 | `v2.1.0` | Phase 3 Commit 1: dry-run-first response automation framework |
 | `v2.2.0` | Phase 3 Commit 2: expanded, reversible Lambda response actions |
+| `v2.3.0` | Phase 3 Commit 3: Step Functions incident orchestration and approval boundaries |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -214,7 +215,7 @@ Transform the foundation into a professionally structured, navigable, source-bac
 # Phase 3 — Response automation
 
 **Status:** In progress
-**Current release:** `v2.2.0 — Response Actions`
+**Current release:** `v2.3.0 — Orchestrated Response`
 **Planned completion release:** `v3.0.0`
 
 ## Objective
@@ -291,21 +292,22 @@ Commit 2 is complete when every new Lambda action can be packaged, tested, deplo
 
 ## Commit 3 — Step Functions incident orchestration
 
-**Status:** Planned  
-**Target release:** `v2.3.0 — Orchestrated Response`
+**Status:** Complete
+
+**Release:** `v2.3.0 — Orchestrated Response`
 
 ### Planned scope
 
-- [ ] Add a reference incident-response state machine.
-- [ ] Orchestrate metadata collection, evidence snapshots, isolation, notification, and rollback preparation.
-- [ ] Add explicit human approval gates for high-impact containment.
-- [ ] Add timeout, retry, catch, and compensation paths.
-- [ ] Add idempotency and duplicate-event handling.
-- [ ] Add execution correlation using incident identifiers.
-- [ ] Add structured success, failure, cancellation, and partial-completion outputs.
-- [ ] Add a read-only triage path and a separately authorized containment path.
-- [ ] Add Mermaid architecture and execution diagrams.
-- [ ] Add Terraform resources, IAM permissions, sample executions, unit or schema tests, and operator guidance.
+- [x] Add a reference incident-response state machine.
+- [x] Orchestrate metadata collection, evidence snapshots, isolation, notification, and rollback preparation.
+- [x] Add explicit human approval gates for high-impact containment.
+- [x] Add timeout, retry, catch, and compensation paths.
+- [x] Add idempotency and duplicate-event handling.
+- [x] Add execution correlation using incident identifiers.
+- [x] Add structured success, failure, cancellation, and partial-completion outputs.
+- [x] Add a read-only triage path and a separately authorized containment path.
+- [x] Add Mermaid architecture and execution diagrams.
+- [x] Add Terraform resources, IAM permissions, sample executions, unit or schema tests, and operator guidance.
 
 ### Completion gate
 
@@ -786,14 +788,12 @@ The project prioritizes transparent, modular, production-inspired patterns that 
 
 # Immediate next milestone
 
-## Phase 3 — Commit 3: Step Functions incident orchestration
+## Phase 3 — Commit 4: Systems Manager evidence and investigation automation
 
-The next package will connect the independent response actions into a controlled state machine with read-only triage, evidence collection, human approval, containment, notification, failure handling, and compensation paths.
+The next package will add read-only-first AWS Systems Manager investigation workflows for supported EC2 instances, encrypted evidence output, platform checks, failure reporting, least-privilege roles, and lab validation without requiring inbound SSH or RDP.
 
 Planned release target:
 
 ```text
-v2.3.0 — Orchestrated Response
+v2.4.0 — SSM Investigation
 ```
-
-The package should include Amazon States Language definitions, approval-boundary design, retry/catch/timeout behavior, Terraform resources, IAM roles, sample executions, schema and unit tests, diagrams, operator guidance, runbook cross-references, release notes, and complete integration instructions.

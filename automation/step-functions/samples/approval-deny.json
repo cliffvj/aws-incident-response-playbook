@@ -1,0 +1,5 @@
+{
+  "decision": "DENY",
+  "approved_by": "security-lead@example.com",
+  "comment": "Containment not authorized; continue manual investigation"
+}

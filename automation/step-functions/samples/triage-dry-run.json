@@ -1,0 +1,12 @@
+{
+  "event_id": "evt-2026-0001-triage-001",
+  "incident_id": "INC-2026-0001",
+  "mode": "triage",
+  "expected_account_id": "111122223333",
+  "region": "us-east-1",
+  "instance_id": "i-0123456789abcdef0",
+  "requested_by": "security-analyst@example.com",
+  "reason": "Authorized read-only triage exercise",
+  "severity": "HIGH",
+  "dry_run": true
+}

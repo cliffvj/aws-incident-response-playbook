@@ -1,0 +1,25 @@
+flowchart TD
+    A[Validated input] --> B{Mode}
+    B -->|triage| T[Collect metadata]
+    T --> TN[Notify]
+    TN --> TS[Triage succeeded]
+    B -->|containment| C[Collect metadata]
+    C --> E[Snapshot evidence]
+    E --> D{dry_run?}
+    D -->|yes| P[Plan quarantine and isolation]
+    P --> PN[Dry-run notification]
+    PN --> PS[Containment planned]
+    D -->|no| AP[Human approval wait]
+    AP -->|APPROVE| Q[Ensure ruleless quarantine SG]
+    Q --> I[Isolate network interfaces]
+    I --> N[Notify]
+    N --> CS[Containment succeeded]
+    AP -->|DENY / timeout| CX[Stop without containment]
+    B -->|rollback| R[Validate and plan rollback]
+    R --> RD{dry_run?}
+    RD -->|yes| RP[Rollback planned]
+    RD -->|no| RAP[Human rollback approval]
+    RAP -->|APPROVE| RR[Restore original SGs]
+    RR --> RN[Notify]
+    RN --> RS[Rollback succeeded]
+    RAP -->|DENY / timeout| RX[Stop without rollback]

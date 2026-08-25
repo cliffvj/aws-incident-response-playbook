@@ -34,4 +34,4 @@
 5. Obtain separate restoration approval.
 6. Set `dry_run: false`, invoke, verify, and document.
 
-Do not retry a mutating action blindly. First determine whether the prior invocation succeeded, partially succeeded, or timed out after AWS accepted the API request.
+Do not retry a mutating action blindly. First determine whether the prior invocation succeeded, partially succeeded, or timed out after AWS accepted the API request.\n## Step Functions operations\n\nUse `event_id` as the one-time execution request identifier and `incident_id` as the broader case identifier. During review, correlate Step Functions execution ARN, DynamoDB status, Lambda request logs, CloudTrail, evidence snapshots, approval identity, and returned rollback manifests.\n\nNever retry a failed execution by blindly reusing the same `event_id`; inspect the current resource state first and then create a new event ID if a rerun is justified.\n

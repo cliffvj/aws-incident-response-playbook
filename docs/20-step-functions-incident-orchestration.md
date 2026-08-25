@@ -120,6 +120,18 @@ Look for explicit task verbs: **identify**, **enable**, **disable**, **isolate**
 
 Use the [incident-response decision guide](decision-trees.md) for cross-scenario escalation, containment, evidence, and recovery choices.
 
+## Reference implementation
+
+Phase 3 Commit 3 implements this scenario as a deployable reference:
+
+- [Step Functions orchestration guide](../automation/step-functions/README.md)
+- [Amazon States Language definition](../automation/step-functions/ec2-incident-response.asl.json)
+- [Terraform deployment](../automation/terraform/README.md)
+- [Orchestration samples](../automation/step-functions/samples/)
+- [Approval helper](../automation/scripts/respond_to_approval.sh)
+
+The implementation keeps triage and dry-run planning separate from live containment, preserves EBS evidence before network isolation, requires human callback approval for live containment and rollback, suppresses duplicate `event_id` values, and returns an isolation rollback manifest for controlled restoration.
+
 ## Authoritative references
 
 - [AWS Security Incident Response Guide](https://docs.aws.amazon.com/whitepapers/latest/aws-security-incident-response-guide/welcome.html)

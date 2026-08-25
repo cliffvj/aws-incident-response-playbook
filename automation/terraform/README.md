@@ -1,17 +1,29 @@
-# Terraform Deployment Scaffold
+# Terraform Deployment
 
-This directory deploys one execution role, CloudWatch log group, and Lambda function per response action, plus a KMS-encrypted SNS incident topic.
+This Terraform configuration deploys the Phase 3 response-action Lambdas **and** the Phase 3 Commit 3 EC2 incident-response Step Functions orchestration.
 
 > [!WARNING]
-> The Terraform is a controlled lab scaffold, not a turnkey production deployment. Review generated IAM policies, replace all placeholder resource scopes, run a plan, and test only with `dry_run: true` before authorizing changes.
+> Treat this as a lab reference, not a drop-in production module. Review IAM scopes, approval-channel access, logging, retention, and target-resource boundaries before applying it anywhere outside an isolated account.
+
+## Resources
+
+- Eleven response-action Lambda functions and per-action roles
+- Per-function CloudWatch Logs groups
+- KMS-encrypted incident SNS topic
+- KMS-encrypted dedicated approval SNS topic
+- Step Functions Standard Workflow for EC2 triage, containment, and rollback
+- Step Functions execution role
+- DynamoDB execution-correlation / duplicate-event table
+- Step Functions CloudWatch Logs group
+- Standalone approver callback IAM policy (not attached automatically)
+- Optional lab email subscription to the approval topic
 
 ## Prerequisites
 
 - Terraform `>= 1.6`
-- AWS provider credentials for an authorized lab account
-- AWS CLI configured for the same account and Region
-- An existing general-purpose S3 lab bucket when testing S3 actions
-- A dedicated IAM lab user path when testing access-key actions
+- AWS CLI and authorized lab credentials
+- An AWS account/Region where the target EC2 test instance exists
+- Existing S3/IAM lab resources if you also test those independent actions
 
 ## Configure
 
@@ -20,14 +32,16 @@ cd automation/terraform
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit at least:
+Review at least:
 
 - `aws_region`
 - `s3_bucket_arns`
 - `iam_user_arns`
-- ownership and environment tags
+- `approval_timeout_seconds`
+- `step_functions_include_execution_data` (recommended `false`)
+- ownership/environment tags
 
-When `s3_bucket_arns` is empty, Terraform uses an intentionally non-production placeholder bucket ARN. When `iam_user_arns` is empty, it limits IAM actions to the `incident-lab/*` path in the current account. Live tests will fail until these scopes match authorized lab resources.
+Leave `approval_email_endpoint = null` unless an explicitly authorized lab mailbox should receive callback tokens. Email subscription requires confirmation after apply.
 
 ## Validate and deploy
 
@@ -40,23 +54,49 @@ terraform show tfplan
 terraform apply tfplan
 ```
 
-Record the `function_names`, `function_arns`, `incident_topic_arn`, and effective IAM scopes in the lab change record.
-
-## First invocation
-
-Use a sample event and keep `dry_run` set to `true`:
+Record these outputs:
 
 ```bash
-aws lambda invoke \
-  --function-name aws-ir-lab-contain-s3-public-access \
-  --cli-binary-format raw-in-base64-out \
-  --payload fileb://../samples/contain-s3-public-access-dry-run.json \
-  response.json
-
-cat response.json
+terraform output function_names
+terraform output state_machine_arn
+terraform output approval_topic_arn
+terraform output execution_table_name
+terraform output approver_policy_arn
 ```
 
-The sample identifiers are placeholders. Replace them with authorized resources and keep the account and Region checks enabled.
+The approver policy is deliberately not attached. Attach it only to the dedicated identity your lab uses to resolve callback tokens.
+
+## First orchestration execution
+
+Start with a dry-run:
+
+```bash
+cd ../..
+STATE_MACHINE_ARN="$(terraform -chdir=automation/terraform output -raw state_machine_arn)"
+
+automation/scripts/start_orchestration.sh \
+  "$STATE_MACHINE_ARN" \
+  automation/step-functions/samples/containment-dry-run.json
+```
+
+Replace all sample account and instance identifiers first. Keep `dry_run` true.
+
+## Live approval test
+
+Only after the dry-run output, execution history, permissions, evidence requirements, and rollback path are reviewed:
+
+1. Create a new unique `event_id`.
+2. Set `dry_run` to `false` in a local, untracked test event.
+3. Start the execution.
+4. Confirm evidence snapshots and the waiting approval state.
+5. Retrieve the approval message from the dedicated approved endpoint.
+6. Resolve it using:
+
+```bash
+automation/scripts/respond_to_approval.sh APPROVE
+```
+
+Use `DENY` when containment is not authorized. Do not store task tokens in files or shell history.
 
 ## Cleanup
 
@@ -65,4 +105,6 @@ terraform destroy
 rm -f ./*.zip tfplan response.json
 ```
 
-Terraform does not manage snapshots created by the response action, quarantine groups retained for rollback, or changes made to target resources. Follow [cost and cleanup guidance](../docs/cost-and-cleanup.md) before destroying the deployment.
+Terraform does not delete EBS snapshots created by incident actions or undo changes applied to target resources before destroy. Restore resource state intentionally and apply retention policy to evidence before tearing down orchestration infrastructure.
+
+See [Step Functions orchestration](../step-functions/README.md) and [cost and cleanup](../docs/cost-and-cleanup.md).

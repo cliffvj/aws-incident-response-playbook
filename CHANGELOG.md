@@ -8,7 +8,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- Step Functions incident orchestration with approval, retry, catch, compensation, and execution-correlation paths.
+- Systems Manager evidence and investigation automation for Phase 3 Commit 4.
+
+## [2.3.0] — 2026-08-25
+
+### Added
+
+- Reference AWS Step Functions Standard Workflow for EC2 triage, evidence preservation, approved containment, and approved rollback.
+- Dedicated KMS-encrypted approval SNS topic using the callback task-token pattern.
+- DynamoDB execution-correlation table with conditional `event_id` duplicate suppression.
+- Structured terminal outcomes for planned, successful, denied, timed-out, invalid-approval, duplicate, failed, and partial-failure paths.
+- Bounded Lambda retries, catches, approval timeouts, and explicit partial-failure handling without blind automatic compensation.
+- Terraform resources for the state machine, execution role, approval topic, correlation table, Step Functions logs, and a standalone human-approver callback policy.
+- Step Functions architecture and execution-path Mermaid sources, dry-run triage/containment/rollback samples, approval-response samples, and operator helper scripts.
+- ASL structural validator and unit tests that enforce approval boundaries and duplicate-event controls.
+- Runbook, documentation index, IAM, operations, safety, troubleshooting, cost, and Terraform cross-references for orchestration.
+
+### Changed
+
+- Phase 3 automation now includes an orchestration layer while retaining independent Lambda action boundaries.
+- Live EC2 containment preserves EBS evidence before requesting approval for network isolation.
+- Live rollback validates and dry-runs the restoration plan before requesting human approval.
+- Step Functions execution-data logging defaults to disabled because callback task tokens and incident context may be sensitive.
+
+### Safety
+
+- Missing orchestration `dry_run` defaults to `true`.
+- Live network containment and live rollback cannot proceed through the reference workflow without a successful callback decision of `APPROVE`.
+- Approval task tokens use a dedicated SNS topic and are not sent through the general incident-notification action.
+- Duplicate `event_id` values stop before response actions execute.
+- Partial containment failures do not automatically erase evidence or undo isolation.
+
+### Validation
+
+- ASL template rendering and transition validation are enforced locally and in GitHub Actions.
+- Unit tests verify callback-token separation, approval routing, and duplicate-event locking.
+- Terraform formatting and validation remain enforced by GitHub Actions.
 
 ## [2.2.0] — 2026-07-25
 

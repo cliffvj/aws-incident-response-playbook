@@ -1,27 +1,30 @@
 # IAM Guidance
 
-The policies in [`policies/`](policies/) are reviewable examples for the individual response actions. Replace the example account IDs, user paths, bucket names, Regions, VPCs, and resource conditions before deployment.
+Policies under [`policies/`](policies/) are reviewable examples for individual response actions and the Step Functions approval callback. Replace sample scopes before deployment.
 
 ## Principles
 
 - Use one execution role per Lambda action.
-- Keep read and write permissions in separate statements where AWS resource-level authorization permits it.
-- Restrict S3 actions to approved bucket ARNs.
-- Restrict IAM actions to a dedicated lab user path or explicit user ARNs.
-- Restrict EC2 write actions by account, Region, resource tags, VPC, or permissions boundary where supported.
-- Do not combine all example policies into a single broad responder role.
-- Remember that the caller who invokes Lambda also needs `lambda:InvokeFunction`; that permission is separate from the function execution role.
+- Use a separate Step Functions execution role for orchestration.
+- Do not attach the approver callback policy to the state-machine role or general users.
+- Restrict S3 actions to approved bucket ARNs and IAM actions to approved users/paths.
+- Restrict EC2 write actions with account, Region, resource tags, VPC constraints, permissions boundaries, and organizational controls where supported.
+- Keep automatic finding triggers separate from response actions until their routing and suppression logic is explicitly tested.
 
-Some EC2 describe operations and selected other APIs require `Resource: "*"`. This does not justify wildcard write permissions. Use identity policies, permission boundaries, service control policies, and explicit deployment variables together.
+## Callback-policy wildcard
+
+[`policies/step-functions-approver-policy.json`](policies/step-functions-approver-policy.json) uses `Resource: "*"` for `states:SendTaskSuccess` and `states:SendTaskFailure`. AWS Step Functions callback APIs are authorized by possession of the task token and these IAM actions do not provide a state-machine resource type for resource-level scoping.
+
+Because the resource cannot be narrowed in the identity policy, compensate operationally:
+
+- attach the policy only to a dedicated, strongly authenticated approver role;
+- distribute task tokens only through the dedicated approval channel;
+- keep token-bearing messages out of general chat and ticket systems;
+- use short approval timeouts; and
+- monitor CloudTrail for callback activity.
+
+The Terraform approver policy is created for review but **not attached automatically**.
 
 ## Placeholder values
 
-The standalone JSON examples intentionally use values such as:
-
-```text
-111122223333
-arn:aws:s3:::example-incident-bucket-123
-arn:aws:iam::111122223333:user/incident-lab/*
-```
-
-They are not ready to attach unchanged. Terraform generates account-aware execution policies and accepts explicit S3 bucket and IAM user ARN lists.
+Standalone JSON policies and samples use values such as `111122223333`, `example-incident-bucket-123`, and `incident-lab/*`. They are not ready to attach unchanged.

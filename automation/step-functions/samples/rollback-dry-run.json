@@ -1,0 +1,39 @@
+{
+  "event_id": "evt-2026-0001-rollback-001",
+  "incident_id": "INC-2026-0001",
+  "mode": "rollback",
+  "expected_account_id": "111122223333",
+  "region": "us-east-1",
+  "instance_id": "i-0123456789abcdef0",
+  "requested_by": "security-analyst@example.com",
+  "reason": "Authorized rollback planning exercise",
+  "severity": "HIGH",
+  "dry_run": true,
+  "confirm_restore": true,
+  "rollback_manifest": {
+    "manifest_version": 1,
+    "action": "isolate_ec2_instance",
+    "incident_id": "INC-2026-0001",
+    "captured_at": "2026-07-24T17:29:16.927558+00:00",
+    "resource": {
+      "type": "ec2-instance",
+      "id": "i-0123456789abcdef0",
+      "account_id": "111122223333",
+      "region": "us-east-1"
+    },
+    "state": {
+      "network_interfaces": [
+        {
+          "network_interface_id": "eni-0123456789abcdef0",
+          "security_group_ids": [
+            "sg-01111111111111111"
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "quarantine_security_group_id": "sg-09999999999999999"
+    },
+    "checksum_sha256": "ce5a29fe22418d64dd38846c6cc7f031f5897d3bf160b10aeb19214f3e555457"
+  }
+}
