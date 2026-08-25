@@ -87,3 +87,18 @@ output "ssm_investigation_operator_policy_arn" {
   value       = aws_iam_policy.ssm_investigation_operator.arn
   description = "Reference responder policy for starting investigation Automation and reading evidence. Not attached automatically."
 }
+
+output "detection_normalizer_function_name" {
+  value       = aws_lambda_function.detection_normalizer.function_name
+  description = "Lambda function that normalizes selected EventBridge findings and routes them safely."
+}
+
+output "detection_dlq_url" {
+  value       = aws_sqs_queue.detection_dlq.url
+  description = "SQS dead-letter queue URL for undelivered EventBridge target events."
+}
+
+output "detection_dedup_table_name" {
+  value       = aws_dynamodb_table.detection_dedup.name
+  description = "DynamoDB table providing time-bounded duplicate suppression for incoming findings."
+}

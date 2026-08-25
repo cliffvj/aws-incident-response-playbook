@@ -107,6 +107,10 @@ flowchart LR
 | Templates | [Incident record](templates/incident-record.md) · [Evidence log](templates/evidence-log.csv) |
 | Automation | [Framework](automation/README.md) · [Response actions](automation/docs/response-actions.md) · [Step Functions orchestration](automation/step-functions/README.md) · [SSM investigation](automation/ssm/README.md) · [Lambda actions](automation/lambda/README.md) · [Rollback manifests](automation/docs/rollback-manifests.md) · [Terraform deployment](automation/terraform/README.md) |
 
+## Phase 3 detection-to-response
+
+Selected GuardDuty, Security Hub, AWS Config, CloudWatch, and CloudTrail events can now be normalized through EventBridge with duplicate suppression, retry/DLQ handling, and conservative notify-only or read-only triage routing. See [Detection-to-response routing](automation/docs/detection-routing.md).
+
 ## Repository structure
 
 ```text
@@ -155,17 +159,16 @@ GitHub Actions runs the same internal-link validation for pull requests and push
 
 ## Project status
 
-**Current release:** `v2.4.0 — SSM Investigation`
+**Current release:** `v2.5.0 — Detection-to-Response`
 
-**Current milestone:** Phase 3 Commit 4 complete; next is detection-to-response event integration.
-
+**Current milestone:** Phase 3 Commit 5 complete; next is Terraform productionization and multi-account deployment patterns.
 
 - **Phase 1 — Foundation:** complete
 - **Phase 2 — Documentation professionalization:** complete
-- **Phase 3 — Response automation:** in progress; Commit 4 SSM investigation released as `v2.4.0`
+- **Phase 3 — Response automation:** in progress; Commit 5 detection-to-response released as `v2.5.0`
 - **Phase 4 — Deployable labs:** planned
 
-The next milestone is **Phase 3 Commit 5 — EventBridge and CloudWatch detection-to-response integration**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
+The next milestone is **Phase 3 Commit 6 — Terraform productionization and multi-account patterns**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing and security
 

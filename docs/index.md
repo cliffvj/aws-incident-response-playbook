@@ -93,3 +93,9 @@ This index organizes the repository by responder task. During an active incident
 - [Terraform deployment](../automation/terraform/README.md)
 - [Sample events](../automation/samples/README.md)
 - [Testing and validation](../automation/tests/README.md)
+
+## Automation detection integration
+
+- [Detection-to-response routing](../automation/docs/detection-routing.md)
+- [Detection DLQ and replay](../automation/docs/replay-and-dlq.md)
+- [EventBridge detection implementation](../automation/detection/README.md)
