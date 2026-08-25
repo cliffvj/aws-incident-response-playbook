@@ -1,0 +1,1648 @@
+{
+  "Comment": "AWS Incident Response Playbook EC2 reference orchestration. Dry-run first; live containment and rollback require callback approval.",
+  "StartAt": "ValidateCoreInput",
+  "States": {
+    "ValidateCoreInput": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.event_id",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.incident_id",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.mode",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.expected_account_id",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.region",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.instance_id",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.requested_by",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.reason",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.severity",
+              "IsPresent": true
+            }
+          ],
+          "Next": "NormalizeDryRun"
+        }
+      ],
+      "Default": "InvalidInput"
+    },
+    "NormalizeDryRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.dry_run",
+          "BooleanEquals": true,
+          "Next": "SetDryRunTrue"
+        },
+        {
+          "Variable": "$.dry_run",
+          "BooleanEquals": false,
+          "Next": "SetDryRunFalse"
+        },
+        {
+          "Variable": "$.dry_run",
+          "IsPresent": false,
+          "Next": "SetDryRunTrue"
+        }
+      ],
+      "Default": "InvalidInput"
+    },
+    "SetDryRunTrue": {
+      "Type": "Pass",
+      "Result": {
+        "dry_run": true
+      },
+      "ResultPath": "$.runtime",
+      "Next": "ValidateMode"
+    },
+    "SetDryRunFalse": {
+      "Type": "Pass",
+      "Result": {
+        "dry_run": false
+      },
+      "ResultPath": "$.runtime",
+      "Next": "ValidateMode"
+    },
+    "ValidateMode": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.mode",
+          "StringEquals": "triage",
+          "Next": "InitializeResults"
+        },
+        {
+          "Variable": "$.mode",
+          "StringEquals": "containment",
+          "Next": "InitializeResults"
+        },
+        {
+          "Variable": "$.mode",
+          "StringEquals": "rollback",
+          "Next": "InitializeResults"
+        }
+      ],
+      "Default": "InvalidInput"
+    },
+    "InitializeResults": {
+      "Type": "Pass",
+      "Result": {},
+      "ResultPath": "$.results",
+      "Next": "AcquireExecutionLock"
+    },
+    "AcquireExecutionLock": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Item": {
+          "event_id": {
+            "S.$": "$.event_id"
+          },
+          "incident_id": {
+            "S.$": "$.incident_id"
+          },
+          "mode": {
+            "S.$": "$.mode"
+          },
+          "status": {
+            "S": "STARTED"
+          },
+          "execution_arn": {
+            "S.$": "$$.Execution.Id"
+          },
+          "started_at": {
+            "S.$": "$$.Execution.StartTime"
+          }
+        },
+        "ConditionExpression": "attribute_not_exists(event_id)"
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "DynamoDB.ConditionalCheckFailedException",
+            "DynamoDb.ConditionalCheckFailedException"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "DuplicateExecution"
+        },
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "WorkflowInfrastructureFailure"
+        }
+      ],
+      "Next": "RouteMode"
+    },
+    "RouteMode": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.mode",
+          "StringEquals": "triage",
+          "Next": "CollectTriageMetadata"
+        },
+        {
+          "Variable": "$.mode",
+          "StringEquals": "containment",
+          "Next": "CollectContainmentMetadata"
+        },
+        {
+          "Variable": "$.mode",
+          "StringEquals": "rollback",
+          "Next": "ValidateRollbackInput"
+        }
+      ],
+      "Default": "InvalidInput"
+    },
+    "CollectTriageMetadata": {
+      "Type": "Task",
+      "Resource": "${collect_metadata_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run.$": "$.runtime.dry_run"
+      },
+      "ResultPath": "$.results.metadata",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "NotifyTriage"
+    },
+    "NotifyTriage": {
+      "Type": "Task",
+      "Resource": "${notify_incident_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "severity.$": "$.severity",
+        "dry_run.$": "$.runtime.dry_run",
+        "message.$": "States.Format('Triage metadata collected for EC2 instance {} in incident {}', $.instance_id, $.incident_id)"
+      },
+      "ResultPath": "$.results.notification",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "RecordTriageSuccess"
+    },
+    "RecordTriageSuccess": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "TRIAGE_SUCCEEDED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "TriageSucceeded"
+        }
+      ],
+      "Next": "TriageSucceeded"
+    },
+    "TriageSucceeded": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "triage",
+        "workflow_status": "SUCCEEDED",
+        "dry_run.$": "$.runtime.dry_run",
+        "metadata.$": "$.results.metadata",
+        "notification.$": "$.results.notification"
+      },
+      "End": true
+    },
+    "CollectContainmentMetadata": {
+      "Type": "Task",
+      "Resource": "${collect_metadata_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run.$": "$.runtime.dry_run"
+      },
+      "ResultPath": "$.results.metadata",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "SnapshotEvidence"
+    },
+    "SnapshotEvidence": {
+      "Type": "Task",
+      "Resource": "${snapshot_ebs_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run.$": "$.runtime.dry_run"
+      },
+      "ResultPath": "$.results.evidence",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "CheckContainmentDryRun"
+    },
+    "CheckContainmentDryRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.runtime.dry_run",
+          "BooleanEquals": true,
+          "Next": "EnsureQuarantineDryRun"
+        }
+      ],
+      "Default": "RequestContainmentApproval"
+    },
+    "EnsureQuarantineDryRun": {
+      "Type": "Task",
+      "Resource": "${ensure_quarantine_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "vpc_id.$": "$.results.metadata.details.vpc_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run": true
+      },
+      "ResultPath": "$.results.quarantine",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "DryRunQuarantineHasGroupId"
+    },
+    "DryRunQuarantineHasGroupId": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.results.quarantine.details.group_id",
+          "IsPresent": true,
+          "Next": "PlanIsolationDryRun"
+        }
+      ],
+      "Default": "NotifyContainmentPlan"
+    },
+    "PlanIsolationDryRun": {
+      "Type": "Task",
+      "Resource": "${isolate_ec2_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "quarantine_security_group_id.$": "$.results.quarantine.details.group_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run": true
+      },
+      "ResultPath": "$.results.isolation",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "NotifyContainmentPlan"
+    },
+    "NotifyContainmentPlan": {
+      "Type": "Task",
+      "Resource": "${notify_incident_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "severity.$": "$.severity",
+        "dry_run": true,
+        "message.$": "States.Format('Dry-run containment plan completed for EC2 instance {} in incident {}', $.instance_id, $.incident_id)"
+      },
+      "ResultPath": "$.results.notification",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "DryRunIsolationResultPresent"
+    },
+    "RecordContainmentPlanned": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "CONTAINMENT_PLANNED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentPlanned"
+        }
+      ],
+      "Next": "ContainmentPlanned"
+    },
+    "ContainmentPlanned": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "PLANNED",
+        "dry_run": true,
+        "metadata.$": "$.results.metadata",
+        "evidence.$": "$.results.evidence",
+        "quarantine.$": "$.results.quarantine",
+        "isolation_plan.$": "$.results.isolation",
+        "notification.$": "$.results.notification"
+      },
+      "End": true
+    },
+    "DryRunIsolationResultPresent": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.results.isolation",
+          "IsPresent": true,
+          "Next": "RecordContainmentPlanned"
+        }
+      ],
+      "Default": "RecordContainmentPlannedWithoutIsolation"
+    },
+    "RecordContainmentPlannedWithoutIsolation": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "CONTAINMENT_PLANNED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentPlannedWithoutIsolation"
+        }
+      ],
+      "Next": "ContainmentPlannedWithoutIsolation"
+    },
+    "ContainmentPlannedWithoutIsolation": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "PLANNED",
+        "dry_run": true,
+        "metadata.$": "$.results.metadata",
+        "evidence.$": "$.results.evidence",
+        "quarantine.$": "$.results.quarantine",
+        "notification.$": "$.results.notification",
+        "operator_note": "No existing per-incident quarantine security group was available, so isolation planning stops before a security-group ID is invented."
+      },
+      "End": true
+    },
+    "RequestContainmentApproval": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::sns:publish.waitForTaskToken",
+      "TimeoutSeconds": "__APPROVAL_TIMEOUT_SECONDS__",
+      "Parameters": {
+        "TopicArn": "${approval_topic_arn}",
+        "Subject": "[APPROVAL REQUIRED] AWS incident containment",
+        "Message": {
+          "approval_type": "containment",
+          "task_token.$": "$$.Task.Token",
+          "event_id.$": "$.event_id",
+          "incident_id.$": "$.incident_id",
+          "severity.$": "$.severity",
+          "instance_id.$": "$.instance_id",
+          "account_id.$": "$.expected_account_id",
+          "region.$": "$.region",
+          "requested_by.$": "$.requested_by",
+          "reason.$": "$.reason",
+          "execution_arn.$": "$$.Execution.Id",
+          "instruction": "Return the task token with SendTaskSuccess and a JSON decision of APPROVE or DENY. Treat the token as a secret."
+        }
+      },
+      "ResultPath": "$.approval",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.Timeout"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordContainmentApprovalTimeout"
+        },
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "EvaluateContainmentApproval"
+    },
+    "EvaluateContainmentApproval": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.approval.decision",
+          "StringEquals": "APPROVE",
+          "Next": "EnsureQuarantineLive"
+        },
+        {
+          "Variable": "$.approval.decision",
+          "StringEquals": "DENY",
+          "Next": "RecordContainmentDenied"
+        }
+      ],
+      "Default": "RecordContainmentInvalidApproval"
+    },
+    "EnsureQuarantineLive": {
+      "Type": "Task",
+      "Resource": "${ensure_quarantine_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "vpc_id.$": "$.results.metadata.details.vpc_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run": false
+      },
+      "ResultPath": "$.results.quarantine",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordContainmentPartialFailure"
+        }
+      ],
+      "Next": "IsolateInstanceLive"
+    },
+    "IsolateInstanceLive": {
+      "Type": "Task",
+      "Resource": "${isolate_ec2_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "quarantine_security_group_id.$": "$.results.quarantine.details.group_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "dry_run": false
+      },
+      "ResultPath": "$.results.isolation",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordContainmentPartialFailure"
+        }
+      ],
+      "Next": "NotifyContainmentSuccess"
+    },
+    "NotifyContainmentSuccess": {
+      "Type": "Task",
+      "Resource": "${notify_incident_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "severity.$": "$.severity",
+        "dry_run": false,
+        "message.$": "States.Format('Approved containment completed for EC2 instance {} in incident {}', $.instance_id, $.incident_id)"
+      },
+      "ResultPath": "$.results.notification",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordContainmentPartialFailure"
+        }
+      ],
+      "Next": "RecordContainmentSuccess"
+    },
+    "RecordContainmentSuccess": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "CONTAINMENT_COMPLETED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentSucceeded"
+        }
+      ],
+      "Next": "ContainmentSucceeded"
+    },
+    "ContainmentSucceeded": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "SUCCEEDED",
+        "dry_run": false,
+        "approval.$": "$.approval",
+        "metadata.$": "$.results.metadata",
+        "evidence.$": "$.results.evidence",
+        "quarantine.$": "$.results.quarantine",
+        "isolation.$": "$.results.isolation",
+        "rollback_manifest.$": "$.results.isolation.details.rollback_manifest",
+        "notification.$": "$.results.notification"
+      },
+      "End": true
+    },
+    "RecordContainmentPartialFailure": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated, last_error = :error, last_cause = :cause",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "PARTIAL_FAILURE"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          },
+          ":error": {
+            "S.$": "$.workflow_error.Error"
+          },
+          ":cause": {
+            "S.$": "$.workflow_error.Cause"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentPartialFailure"
+        }
+      ],
+      "Next": "ContainmentPartialFailure"
+    },
+    "ContainmentPartialFailure": {
+      "Type": "Fail",
+      "Error": "ContainmentPartialFailure",
+      "Cause": "Evidence or other earlier steps may have completed. The workflow does not automatically reverse containment; inspect the execution record and rollback manifest before manual recovery."
+    },
+    "RecordContainmentDenied": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "CONTAINMENT_DENIED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentDenied"
+        }
+      ],
+      "Next": "ContainmentDenied"
+    },
+    "ContainmentDenied": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "DENIED",
+        "approval.$": "$.approval",
+        "evidence.$": "$.results.evidence"
+      },
+      "End": true
+    },
+    "RecordContainmentInvalidApproval": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "APPROVAL_INVALID"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentInvalidApproval"
+        }
+      ],
+      "Next": "ContainmentInvalidApproval"
+    },
+    "ContainmentInvalidApproval": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "APPROVAL_INVALID",
+        "approval.$": "$.approval"
+      },
+      "End": true
+    },
+    "RecordContainmentApprovalTimeout": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "APPROVAL_TIMED_OUT"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "ContainmentApprovalTimedOut"
+        }
+      ],
+      "Next": "ContainmentApprovalTimedOut"
+    },
+    "ContainmentApprovalTimedOut": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "containment",
+        "workflow_status": "APPROVAL_TIMED_OUT",
+        "evidence.$": "$.results.evidence"
+      },
+      "End": true
+    },
+    "ValidateRollbackInput": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.rollback_manifest",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.confirm_restore",
+              "BooleanEquals": true
+            }
+          ],
+          "Next": "PlanRollback"
+        }
+      ],
+      "Default": "InvalidRollbackInput"
+    },
+    "PlanRollback": {
+      "Type": "Task",
+      "Resource": "${restore_ec2_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "rollback_manifest.$": "$.rollback_manifest",
+        "confirm_restore": true,
+        "dry_run": true
+      },
+      "ResultPath": "$.results.rollback_plan",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "CheckRollbackDryRun"
+    },
+    "CheckRollbackDryRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.runtime.dry_run",
+          "BooleanEquals": true,
+          "Next": "NotifyRollbackPlan"
+        }
+      ],
+      "Default": "RequestRollbackApproval"
+    },
+    "NotifyRollbackPlan": {
+      "Type": "Task",
+      "Resource": "${notify_incident_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "severity.$": "$.severity",
+        "dry_run": true,
+        "message.$": "States.Format('Dry-run rollback plan validated for EC2 instance {} in incident {}', $.instance_id, $.incident_id)"
+      },
+      "ResultPath": "$.results.notification",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "RecordRollbackPlanned"
+    },
+    "RecordRollbackPlanned": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "ROLLBACK_PLANNED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackPlanned"
+        }
+      ],
+      "Next": "RollbackPlanned"
+    },
+    "RollbackPlanned": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "rollback",
+        "workflow_status": "PLANNED",
+        "dry_run": true,
+        "rollback_plan.$": "$.results.rollback_plan",
+        "notification.$": "$.results.notification"
+      },
+      "End": true
+    },
+    "RequestRollbackApproval": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::sns:publish.waitForTaskToken",
+      "TimeoutSeconds": "__APPROVAL_TIMEOUT_SECONDS__",
+      "Parameters": {
+        "TopicArn": "${approval_topic_arn}",
+        "Subject": "[APPROVAL REQUIRED] AWS incident rollback",
+        "Message": {
+          "approval_type": "rollback",
+          "task_token.$": "$$.Task.Token",
+          "event_id.$": "$.event_id",
+          "incident_id.$": "$.incident_id",
+          "severity.$": "$.severity",
+          "instance_id.$": "$.instance_id",
+          "account_id.$": "$.expected_account_id",
+          "region.$": "$.region",
+          "requested_by.$": "$.requested_by",
+          "reason.$": "$.reason",
+          "execution_arn.$": "$$.Execution.Id",
+          "instruction": "Return the task token with SendTaskSuccess and a JSON decision of APPROVE or DENY. Treat the token as a secret."
+        }
+      },
+      "ResultPath": "$.approval",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.Timeout"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordRollbackApprovalTimeout"
+        },
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordWorkflowFailure"
+        }
+      ],
+      "Next": "EvaluateRollbackApproval"
+    },
+    "EvaluateRollbackApproval": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.approval.decision",
+          "StringEquals": "APPROVE",
+          "Next": "ExecuteRollbackLive"
+        },
+        {
+          "Variable": "$.approval.decision",
+          "StringEquals": "DENY",
+          "Next": "RecordRollbackDenied"
+        }
+      ],
+      "Default": "RecordRollbackInvalidApproval"
+    },
+    "ExecuteRollbackLive": {
+      "Type": "Task",
+      "Resource": "${restore_ec2_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "instance_id.$": "$.instance_id",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "rollback_manifest.$": "$.rollback_manifest",
+        "confirm_restore": true,
+        "dry_run": false
+      },
+      "ResultPath": "$.results.rollback",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordRollbackPartialFailure"
+        }
+      ],
+      "Next": "NotifyRollbackSuccess"
+    },
+    "NotifyRollbackSuccess": {
+      "Type": "Task",
+      "Resource": "${notify_incident_arn}",
+      "TimeoutSeconds": 75,
+      "Parameters": {
+        "incident_id.$": "$.incident_id",
+        "expected_account_id.$": "$.expected_account_id",
+        "region.$": "$.region",
+        "requested_by.$": "$.requested_by",
+        "reason.$": "$.reason",
+        "severity.$": "$.severity",
+        "dry_run": false,
+        "message.$": "States.Format('Approved EC2 network rollback completed for instance {} in incident {}', $.instance_id, $.incident_id)"
+      },
+      "ResultPath": "$.results.notification",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "RecordRollbackPartialFailure"
+        }
+      ],
+      "Next": "RecordRollbackSuccess"
+    },
+    "RecordRollbackSuccess": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "ROLLBACK_COMPLETED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackSucceeded"
+        }
+      ],
+      "Next": "RollbackSucceeded"
+    },
+    "RollbackSucceeded": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "rollback",
+        "workflow_status": "SUCCEEDED",
+        "dry_run": false,
+        "approval.$": "$.approval",
+        "rollback_plan.$": "$.results.rollback_plan",
+        "rollback.$": "$.results.rollback",
+        "notification.$": "$.results.notification"
+      },
+      "End": true
+    },
+    "RecordRollbackPartialFailure": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated, last_error = :error, last_cause = :cause",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "PARTIAL_FAILURE"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          },
+          ":error": {
+            "S.$": "$.workflow_error.Error"
+          },
+          ":cause": {
+            "S.$": "$.workflow_error.Cause"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackPartialFailure"
+        }
+      ],
+      "Next": "RollbackPartialFailure"
+    },
+    "RollbackPartialFailure": {
+      "Type": "Fail",
+      "Error": "RollbackPartialFailure",
+      "Cause": "Rollback or post-rollback notification failed. Inspect current resource state before retrying with a new event_id."
+    },
+    "RecordRollbackDenied": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "ROLLBACK_DENIED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackDenied"
+        }
+      ],
+      "Next": "RollbackDenied"
+    },
+    "RollbackDenied": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "rollback",
+        "workflow_status": "DENIED",
+        "approval.$": "$.approval",
+        "rollback_plan.$": "$.results.rollback_plan"
+      },
+      "End": true
+    },
+    "RecordRollbackInvalidApproval": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "APPROVAL_INVALID"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackInvalidApproval"
+        }
+      ],
+      "Next": "RollbackInvalidApproval"
+    },
+    "RollbackInvalidApproval": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "rollback",
+        "workflow_status": "APPROVAL_INVALID",
+        "approval.$": "$.approval"
+      },
+      "End": true
+    },
+    "RecordRollbackApprovalTimeout": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "APPROVAL_TIMED_OUT"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "RollbackApprovalTimedOut"
+        }
+      ],
+      "Next": "RollbackApprovalTimedOut"
+    },
+    "RollbackApprovalTimedOut": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode": "rollback",
+        "workflow_status": "APPROVAL_TIMED_OUT",
+        "rollback_plan.$": "$.results.rollback_plan"
+      },
+      "End": true
+    },
+    "RecordWorkflowFailure": {
+      "Type": "Task",
+      "Resource": "arn:${partition}:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${execution_table_name}",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, updated_at = :updated, last_error = :error, last_cause = :cause",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "FAILED"
+          },
+          ":updated": {
+            "S.$": "$$.State.EnteredTime"
+          },
+          ":error": {
+            "S.$": "$.workflow_error.Error"
+          },
+          ":cause": {
+            "S.$": "$.workflow_error.Cause"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.record_error",
+          "Next": "WorkflowFailed"
+        }
+      ],
+      "Next": "WorkflowFailed"
+    },
+    "WorkflowFailed": {
+      "Type": "Fail",
+      "Error": "WorkflowFailed",
+      "Cause": "A response action or orchestration service integration failed. Inspect the Step Functions execution and DynamoDB execution record."
+    },
+    "WorkflowInfrastructureFailure": {
+      "Type": "Fail",
+      "Error": "WorkflowInfrastructureFailure",
+      "Cause": "The orchestration execution lock could not be acquired due to an infrastructure error."
+    },
+    "DuplicateExecution": {
+      "Type": "Pass",
+      "Parameters": {
+        "event_id.$": "$.event_id",
+        "incident_id.$": "$.incident_id",
+        "mode.$": "$.mode",
+        "workflow_status": "DUPLICATE_SKIPPED",
+        "operator_note": "This event_id already exists. Use a new event_id only after reviewing the existing execution record."
+      },
+      "End": true
+    },
+    "InvalidInput": {
+      "Type": "Fail",
+      "Error": "InvalidInput",
+      "Cause": "Required core fields are missing, mode is unsupported, or dry_run is not a boolean."
+    },
+    "InvalidRollbackInput": {
+      "Type": "Fail",
+      "Error": "InvalidRollbackInput",
+      "Cause": "Rollback mode requires a rollback_manifest and confirm_restore exactly true."
+    }
+  }
+}

@@ -1,82 +1,129 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "actions": [
     {
       "name": "collect_ec2_metadata",
       "mutation": false,
       "rollback_action": null,
-      "sample_events": ["collect-ec2-metadata.json"],
-      "runbooks": ["../docs/01-ec2-instance-compromise.md"]
+      "sample_events": [
+        "collect-ec2-metadata.json"
+      ],
+      "runbooks": [
+        "../docs/01-ec2-instance-compromise.md"
+      ]
     },
     {
       "name": "ensure_quarantine_security_group",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["ensure-quarantine-sg-dry-run.json"],
-      "runbooks": ["../docs/02-automated-ec2-isolation.md", "../docs/16-security-group-open-to-world.md"]
+      "sample_events": [
+        "ensure-quarantine-sg-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/02-automated-ec2-isolation.md",
+        "../docs/16-security-group-open-to-world.md"
+      ]
     },
     {
       "name": "isolate_ec2_instance",
       "mutation": true,
       "rollback_action": "restore_ec2_security_groups",
-      "sample_events": ["isolate-ec2-dry-run.json"],
-      "runbooks": ["../docs/02-automated-ec2-isolation.md"]
+      "sample_events": [
+        "isolate-ec2-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/02-automated-ec2-isolation.md"
+      ]
     },
     {
       "name": "restore_ec2_security_groups",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["restore-ec2-security-groups-dry-run.json"],
-      "runbooks": ["../docs/02-automated-ec2-isolation.md"]
+      "sample_events": [
+        "restore-ec2-security-groups-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/02-automated-ec2-isolation.md"
+      ]
     },
     {
       "name": "snapshot_ebs_volumes",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["snapshot-ebs-dry-run.json"],
-      "runbooks": ["../docs/19-ebs-snapshot-forensic-preservation.md"]
+      "sample_events": [
+        "snapshot-ebs-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/19-ebs-snapshot-forensic-preservation.md"
+      ]
     },
     {
       "name": "disable_iam_access_key",
       "mutation": true,
       "rollback_action": "restore_iam_access_key",
-      "sample_events": ["disable-iam-key-dry-run.json"],
-      "runbooks": ["../docs/03-iam-credential-compromise.md"]
+      "sample_events": [
+        "disable-iam-key-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/03-iam-credential-compromise.md"
+      ]
     },
     {
       "name": "restore_iam_access_key",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["restore-iam-key-dry-run.json"],
-      "runbooks": ["../docs/03-iam-credential-compromise.md"]
+      "sample_events": [
+        "restore-iam-key-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/03-iam-credential-compromise.md"
+      ]
     },
     {
       "name": "inspect_s3_public_access",
       "mutation": false,
       "rollback_action": null,
-      "sample_events": ["inspect-s3-public-access.json"],
-      "runbooks": ["../docs/05-public-s3-bucket.md", "../docs/s3-data-leak-response.md"]
+      "sample_events": [
+        "inspect-s3-public-access.json"
+      ],
+      "runbooks": [
+        "../docs/05-public-s3-bucket.md",
+        "../docs/s3-data-leak-response.md"
+      ]
     },
     {
       "name": "contain_s3_public_access",
       "mutation": true,
       "rollback_action": "restore_s3_public_access",
-      "sample_events": ["contain-s3-public-access-dry-run.json"],
-      "runbooks": ["../docs/05-public-s3-bucket.md", "../docs/s3-data-leak-response.md"]
+      "sample_events": [
+        "contain-s3-public-access-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/05-public-s3-bucket.md",
+        "../docs/s3-data-leak-response.md"
+      ]
     },
     {
       "name": "restore_s3_public_access",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["restore-s3-public-access-dry-run.json"],
-      "runbooks": ["../docs/05-public-s3-bucket.md"]
+      "sample_events": [
+        "restore-s3-public-access-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/05-public-s3-bucket.md"
+      ]
     },
     {
       "name": "notify_incident",
       "mutation": true,
       "rollback_action": null,
-      "sample_events": ["notify-incident-dry-run.json"],
-      "runbooks": ["../docs/18-cloudwatch-detection-alerting.md"]
+      "sample_events": [
+        "notify-incident-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/18-cloudwatch-detection-alerting.md"
+      ]
     }
   ]
 }

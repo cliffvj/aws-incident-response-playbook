@@ -1,25 +1,17 @@
-# Tests
+# Automation Tests
 
-The test suite uses `unittest` and mocked AWS clients. It does not call AWS.
+Run from the repository root inside an optional virtual environment:
 
 ```bash
 python3 -m pip install -r automation/requirements-dev.txt
+python3 -m compileall -q automation
 python3 -m unittest discover -s automation/tests -p 'test_*.py'
 python3 automation/scripts/validate_json.py
 python3 automation/scripts/check_action_contracts.py
+python3 automation/scripts/validate_state_machines.py
 python3 automation/scripts/package_lambdas.py
 ```
 
-Coverage includes:
+Commit 3 adds structural tests for the Step Functions definition. They verify transition targets, callback task-token states, duplicate-event locking, and the separation of live containment/rollback from approval decisions.
 
-- identifier, dry-run, and confirmation validation
-- account and Region-aware action behavior
-- rollback manifest checksum and resource validation
-- EC2 multi-interface isolation and restoration planning
-- quarantine security-group create/reuse behavior
-- EBS snapshot duplicate prevention
-- IAM key ownership, disablement, and restoration planning
-- S3 inspection, containment, idempotency, and restoration
-- package contents and action-catalog completeness
-
-These are unit and contract tests, not substitutes for authorized AWS integration tests.
+These tests do not replace an authorized AWS integration exercise. Terraform validation and a dry-run state-machine execution should pass before any live approval path is attempted.

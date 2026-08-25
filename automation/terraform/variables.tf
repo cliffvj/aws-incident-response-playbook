@@ -45,3 +45,27 @@ variable "tags" {
   description = "Additional tags applied to Terraform-managed resources."
   default     = {}
 }
+
+variable "approval_timeout_seconds" {
+  type        = number
+  description = "Maximum time a live containment or rollback execution waits for a human callback decision."
+  default     = 3600
+
+  validation {
+    condition     = var.approval_timeout_seconds >= 60 && var.approval_timeout_seconds <= 86400
+    error_message = "approval_timeout_seconds must be between 60 and 86400 seconds."
+  }
+}
+
+variable "approval_email_endpoint" {
+  type        = string
+  description = "Optional lab-only email endpoint for approval SNS messages. The subscription requires confirmation and exposes sensitive task tokens to that mailbox."
+  default     = null
+  nullable    = true
+}
+
+variable "step_functions_include_execution_data" {
+  type        = bool
+  description = "Whether Step Functions CloudWatch Logs include execution input/output. Keep false by default because approval task tokens and incident context are sensitive."
+  default     = false
+}

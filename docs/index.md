@@ -84,6 +84,7 @@ This index organizes the repository by responder task. During an active incident
 
 - [Automation framework](../automation/README.md)
 - [Response action workflows](../automation/docs/response-actions.md)
+- [Step Functions EC2 orchestration](../automation/step-functions/README.md)
 - [Lambda actions](../automation/lambda/README.md)
 - [Rollback manifests](../automation/docs/rollback-manifests.md)
 - [Idempotency and retry guidance](../automation/docs/idempotency.md)

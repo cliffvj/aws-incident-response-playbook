@@ -1,0 +1,13 @@
+flowchart LR
+    O[Responder / incident system] --> SF[AWS Step Functions\nStandard Workflow]
+    SF --> DDB[(DynamoDB\nexecution correlation)]
+    SF --> META[collect_ec2_metadata]
+    SF --> SNAP[snapshot_ebs_volumes]
+    SF --> QSG[ensure_quarantine_security_group]
+    SF --> ISO[isolate_ec2_instance]
+    SF --> RESTORE[restore_ec2_security_groups]
+    SF --> NOTIFY[notify_incident]
+    SF --> APPROVAL[SNS approval topic\nwaitForTaskToken]
+    APPROVAL --> HUMAN[Authorized human approver]
+    HUMAN -->|SendTaskSuccess| SF
+    NOTIFY --> INCIDENT[SNS incident topic]

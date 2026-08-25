@@ -1,0 +1,30 @@
+{
+  "version": "2.3.0",
+  "workflows": [
+    {
+      "name": "ec2_incident_response",
+      "type": "STANDARD",
+      "definition": "step-functions/ec2-incident-response.asl.json",
+      "modes": [
+        "triage",
+        "containment",
+        "rollback"
+      ],
+      "approval_required_for": [
+        "containment_live",
+        "rollback_live"
+      ],
+      "deduplication_key": "event_id",
+      "incident_correlation_key": "incident_id",
+      "samples": [
+        "step-functions/samples/triage-dry-run.json",
+        "step-functions/samples/containment-dry-run.json",
+        "step-functions/samples/rollback-dry-run.json"
+      ],
+      "runbooks": [
+        "../docs/20-step-functions-incident-orchestration.md",
+        "../docs/02-automated-ec2-isolation.md"
+      ]
+    }
+  ]
+}

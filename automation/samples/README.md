@@ -30,3 +30,15 @@ python3 automation/scripts/validate_json.py
   aws-ir-lab-contain-s3-public-access \
   automation/samples/contain-s3-public-access-dry-run.json
 ```
+
+## Orchestration samples
+
+Step Functions events are kept under [`../step-functions/samples/`](../step-functions/samples/):
+
+- `triage-dry-run.json`
+- `containment-dry-run.json`
+- `rollback-dry-run.json`
+- `approval-approve.json`
+- `approval-deny.json`
+
+Keep each `event_id` unique. Reusing an event ID is intentionally treated as a duplicate and skipped.

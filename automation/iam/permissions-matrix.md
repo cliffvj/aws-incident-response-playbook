@@ -16,3 +16,16 @@
 | All Lambda functions | None | CloudWatch Logs stream and event writes | Their own log group |
 
 `sts:GetCallerIdentity` is used to compare the invocation's optional `expected_account_id` with the actual caller account. Review AWS STS and organizational policy behavior in the deployment environment.
+
+## Orchestration permissions
+
+| Principal | Permissions | Scope / reason |
+|---|---|---|
+| Step Functions execution role | `lambda:InvokeFunction` | Six EC2 orchestration action functions only |
+| Step Functions execution role | `sns:Publish` | Dedicated approval SNS topic only |
+| Step Functions execution role | `kms:Decrypt`, `kms:GenerateDataKey` | KMS key protecting the approval topic |
+| Step Functions execution role | `dynamodb:PutItem`, `dynamodb:UpdateItem` | Execution-correlation table only |
+| Step Functions execution role | CloudWatch Logs delivery APIs | `Resource: "*"` where AWS log-delivery APIs do not support useful resource scoping |
+| Dedicated human approver role | `states:SendTaskSuccess`, `states:SendTaskFailure` | `Resource: "*"`; callback APIs rely on the task token and do not expose resource-level state-machine scoping |
+
+Do not attach the approver policy to the state-machine role, Lambda roles, or broad responder groups.
