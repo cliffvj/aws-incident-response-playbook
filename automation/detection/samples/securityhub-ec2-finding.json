@@ -1,0 +1,27 @@
+{
+  "version": "0",
+  "id": "22222222-3333-4444-5555-666666666666",
+  "detail-type": "Security Hub Findings - Imported",
+  "source": "aws.securityhub",
+  "account": "111122223333",
+  "time": "2026-08-25T12:05:00Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "findings": [
+      {
+        "Id": "sh-finding-example",
+        "Title": "Example Security Hub EC2 finding",
+        "Severity": {
+          "Label": "HIGH"
+        },
+        "Resources": [
+          {
+            "Type": "AwsEc2Instance",
+            "Id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0123456789abcdef0"
+          }
+        ]
+      }
+    ]
+  }
+}

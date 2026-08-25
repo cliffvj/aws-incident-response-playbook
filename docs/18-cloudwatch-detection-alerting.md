@@ -131,3 +131,6 @@ Use the [incident-response decision guide](decision-trees.md) for cross-scenario
 ---
 
 [Documentation index](index.md) · [Previous scenario](17-cloudtrail-audit-tampering.md) · [Next scenario](19-ebs-snapshot-forensic-preservation.md)
+## Phase 3 detection integration
+
+Phase 3 Commit 5 can route CloudWatch `ALARM` state changes through the detection normalizer. Generic CloudWatch alarm routing is disabled by default to prevent noisy account-wide automation. See [EventBridge detection implementation](../automation/detection/README.md).

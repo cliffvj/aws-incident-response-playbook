@@ -98,3 +98,74 @@ variable "ssm_evidence_noncurrent_retention_days" {
     error_message = "ssm_evidence_noncurrent_retention_days must be at least 1 day."
   }
 }
+
+variable "detection_default_route" {
+  type        = string
+  description = "Default response route for normalized detections: notify_only or read-only triage."
+  default     = "notify_only"
+  validation {
+    condition     = contains(["notify_only", "triage"], var.detection_default_route)
+    error_message = "detection_default_route must be notify_only or triage."
+  }
+}
+
+variable "detection_allowed_account_ids" {
+  type        = list(string)
+  description = "Optional source-account allowlist for detection events. Empty permits the local account and any intentionally forwarded account."
+  default     = []
+}
+
+variable "detection_ignore_principal_arn_prefixes" {
+  type        = list(string)
+  description = "Narrow principal ARN prefixes suppressed by the CloudTrail normalizer to reduce automation loops."
+  default     = []
+}
+
+variable "detection_dedup_ttl_seconds" {
+  type        = number
+  description = "Duplicate-suppression TTL for normalized findings."
+  default     = 86400
+}
+
+variable "detection_dlq_retention_seconds" {
+  type        = number
+  description = "Retention for undelivered EventBridge target events in the SQS DLQ."
+  default     = 1209600
+}
+
+variable "detection_max_event_age_seconds" {
+  type        = number
+  description = "Maximum age EventBridge retries a failed target delivery."
+  default     = 3600
+}
+
+variable "detection_max_retry_attempts" {
+  type        = number
+  description = "Maximum EventBridge target retry attempts."
+  default     = 12
+}
+
+variable "enable_detection_event_archive" {
+  type        = bool
+  description = "Enable an EventBridge archive for selected security-event sources. Disabled by default for cost and retention control."
+  default     = false
+}
+
+variable "detection_archive_retention_days" {
+  type        = number
+  description = "Retention days for the optional EventBridge archive."
+  default     = 7
+}
+
+variable "enable_cloudwatch_alarm_routing" {
+  type        = bool
+  description = "Enable routing of generic CloudWatch ALARM state changes. Disabled by default because account-wide alarm routing can be noisy."
+  default     = false
+}
+
+variable "cloudwatch_security_log_group_name" {
+  type        = string
+  description = "Optional existing CloudWatch Logs log group on which to create a simple AccessDenied metric filter and alarm."
+  default     = null
+  nullable    = true
+}

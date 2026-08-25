@@ -1,7 +1,7 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
 > **Current milestone:** Phase 3 — Response automation
-> **Current release:** `v2.4.0 — SSM Investigation`
+> **Current release:** `v2.5.0 — Detection-to-Response`
 > **Roadmap status date:** 2026-08-25
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
@@ -83,6 +83,7 @@ Every phase follows the same core principles:
 | `v2.2.0` | Phase 3 Commit 2: expanded, reversible Lambda response actions |
 | `v2.3.0` | Phase 3 Commit 3: Step Functions incident orchestration and approval boundaries |
 | `v2.4.0` | Phase 3 Commit 4: Systems Manager read-only evidence collection and integrity manifests |
+| `v2.5.0` | Phase 3 Commit 5: EventBridge detection-to-response routing with conservative automation controls |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -114,7 +115,7 @@ The phases are intentionally sequential:
 
 # Phase 1 — Foundation
 
-**Status:** Complete  
+**Status:** Complete
 **Completion release:** `v1.0.0`
 
 ## Objective
@@ -144,7 +145,7 @@ Create a coherent AWS incident-response reference covering common scenarios, sup
 
 # Phase 2 — Documentation professionalization
 
-**Status:** Complete  
+**Status:** Complete
 **Completion release:** `v2.0.0 — Production Documentation`
 
 ## Objective
@@ -216,7 +217,7 @@ Transform the foundation into a professionally structured, navigable, source-bac
 # Phase 3 — Response automation
 
 **Status:** In progress
-**Current release:** `v2.4.0 — SSM Investigation`
+**Current release:** `v2.5.0 — Detection-to-Response`
 **Planned completion release:** `v3.0.0`
 
 ## Objective
@@ -241,7 +242,7 @@ flowchart LR
 
 ## Commit 1 — Automation framework
 
-**Status:** Complete  
+**Status:** Complete
 **Release:** `v2.1.0 — Automation Framework`
 
 ### Delivered
@@ -343,21 +344,21 @@ A responder must be able to invoke evidence collection without SSH, retrieve the
 
 ## Commit 5 — EventBridge and CloudWatch detection-to-response integration
 
-**Status:** Planned  
+**Status:** Complete
 **Target release:** `v2.5.0 — Detection-to-Response`
 
 ### Planned scope
 
-- [ ] Add EventBridge patterns for selected CloudTrail, GuardDuty, Security Hub, and AWS Config events.
-- [ ] Add CloudWatch alarm and log-derived event integration where appropriate.
-- [ ] Normalize incoming findings into the automation event contract.
-- [ ] Add routing by severity, account, Region, resource type, and response mode.
-- [ ] Add dead-letter handling and replay guidance.
-- [ ] Add suppression, deduplication, and loop-prevention controls.
-- [ ] Keep default behavior in notify-only or approval-required mode.
-- [ ] Allow automatic execution only for explicitly classified low-risk actions.
-- [ ] Add sample findings, event tests, and troubleshooting guidance.
-- [ ] Document false-positive and incomplete-context handling.
+- [x] Add EventBridge patterns for selected CloudTrail, GuardDuty, Security Hub, and AWS Config events.
+- [x] Add CloudWatch alarm and log-derived event integration where appropriate.
+- [x] Normalize incoming findings into the automation event contract.
+- [x] Add routing by severity, account, Region, resource type, and response mode.
+- [x] Add dead-letter handling and replay guidance.
+- [x] Add suppression, deduplication, and loop-prevention controls.
+- [x] Keep default behavior in notify-only or approval-required mode.
+- [x] Allow automatic execution only for explicitly classified low-risk actions.
+- [x] Add sample findings, event tests, and troubleshooting guidance.
+- [x] Document false-positive and incomplete-context handling.
 
 ### Completion gate
 
@@ -365,7 +366,7 @@ Supported findings must reach the correct response path without triggering uncon
 
 ## Commit 6 — Terraform productionization and multi-account patterns
 
-**Status:** Planned  
+**Status:** Planned
 **Target release:** `v2.6.0 — Deployment Modules`
 
 ### Planned scope
@@ -387,7 +388,7 @@ A user must be able to deploy the supported automation into an isolated AWS lab 
 
 ## Commit 7 — Authorized end-to-end incident lab
 
-**Status:** Planned  
+**Status:** Planned
 **Target release:** `v3.0.0 — Automated Response Platform`
 
 ### Planned scope
@@ -789,12 +790,12 @@ The project prioritizes transparent, modular, production-inspired patterns that 
 
 # Immediate next milestone
 
-## Phase 3 — Commit 5: EventBridge and CloudWatch detection-to-response integration
+## Phase 3 — Commit 6: Terraform productionization and multi-account patterns
 
-The next package will normalize selected CloudTrail, GuardDuty, Security Hub, AWS Config, and CloudWatch events into the automation event contract; route them by severity, account, Region, resource type, and response mode; add dead-letter/replay and loop-prevention guidance; and retain notify-only or approval-required defaults.
+The next package will refactor the deployment into reusable Terraform modules, add environment examples and state-migration guidance, introduce controlled AWS Organizations event-forwarding patterns, and strengthen security-oriented Terraform validation.
 
 Planned release target:
 
 ```text
-v2.5.0 — Detection-to-Response
+v2.6.0 — Deployment Modules
 ```

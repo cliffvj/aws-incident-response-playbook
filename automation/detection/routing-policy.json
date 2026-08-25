@@ -1,0 +1,38 @@
+{
+  "version": "2.5.0",
+  "default_route": "notify_only",
+  "routes": [
+    {
+      "source": "aws.guardduty",
+      "detail_type": "GuardDuty Finding",
+      "minimum_severity": "MEDIUM",
+      "automatic_action": "triage_only_when_enabled",
+      "live_containment": false
+    },
+    {
+      "source": "aws.securityhub",
+      "detail_type": "Security Hub Findings - Imported",
+      "minimum_severity": "MEDIUM",
+      "automatic_action": "triage_only_when_enabled",
+      "live_containment": false
+    },
+    {
+      "source": "aws.config",
+      "detail_type": "Config Rules Compliance Change",
+      "automatic_action": "notify_only_unless_ec2_triage_enabled",
+      "live_containment": false
+    },
+    {
+      "source": "aws.cloudwatch",
+      "detail_type": "CloudWatch Alarm State Change",
+      "automatic_action": "notify_only",
+      "live_containment": false
+    },
+    {
+      "source": "aws.cloudtrail",
+      "detail_type": "AWS API Call via CloudTrail",
+      "automatic_action": "notify_only",
+      "live_containment": false
+    }
+  ]
+}

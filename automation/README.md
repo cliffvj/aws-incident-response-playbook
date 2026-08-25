@@ -2,7 +2,7 @@
 
 Phase 3 converts the repository's documented response procedures into modular, deployable, testable, and auditable AWS automation.
 
-**Current automation release:** `v2.4.0 — SSM Investigation`
+**Current automation release:** `v2.5.0 — Detection-to-Response`
 
 ## Capabilities
 
@@ -24,7 +24,7 @@ Phase 3 converts the repository's documented response procedures into modular, d
 6. **No blind compensation.** Partial containment failures stop for operator review rather than automatically erasing a desired isolation.
 7. **Least privilege.** Each component receives only the permissions needed for its defined role.
 8. **Encrypted evidence and notification channels.** Terraform uses customer-managed KMS keys for SSM evidence and incident/approval SNS topics.
-9. **No automatic finding trigger yet.** EventBridge/GuardDuty/Security Hub integration remains reserved for Commit 5.
+9. **Conservative detection routing.** EventBridge findings default to notify-only; optional automated triage remains read-only and `dry_run: true`, and live containment is never started directly by the detection layer.
 10. **Authorized labs only.** Do not deploy or invoke this repository's automation against production without organization-specific review and approval.
 
 ## Directory map
@@ -65,3 +65,7 @@ automation/
 - [Running commands on managed nodes](https://docs.aws.amazon.com/systems-manager/latest/userguide/running-commands.html)
 - [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html)
 - [Building Lambda functions with Python](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python.html)
+
+## Detection-to-response
+
+Phase 3 Commit 5 adds [EventBridge detection routing](detection/README.md). Selected GuardDuty, Security Hub, AWS Config, CloudWatch, and CloudTrail events pass through a normalizer with account checks, duplicate suppression, target retry/DLQ handling, and notify-only or read-only triage routing. Live containment is not automatically triggered.

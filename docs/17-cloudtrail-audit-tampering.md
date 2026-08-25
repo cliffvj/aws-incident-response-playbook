@@ -131,3 +131,6 @@ Use the [incident-response decision guide](decision-trees.md) for cross-scenario
 ---
 
 [Documentation index](index.md) · [Previous scenario](16-security-group-open-to-world.md) · [Next scenario](18-cloudwatch-detection-alerting.md)
+## Phase 3 detection integration
+
+Phase 3 Commit 5 includes an EventBridge pattern for selected CloudTrail control-plane tampering APIs such as `StopLogging` and `DeleteTrail`. Matches are normalized and routed notify-only by default; they do not trigger automatic remediation. See [Detection-to-response routing](../automation/docs/detection-routing.md).

@@ -8,7 +8,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- EventBridge and CloudWatch detection-to-response integration for Phase 3 Commit 5.
+- Terraform productionization and reusable multi-account deployment patterns for Phase 3 Commit 6.
+
+## [2.5.0] — 2026-08-25
+
+### Added
+
+- EventBridge patterns for medium-or-higher GuardDuty findings, Security Hub CSPM imported findings, AWS Config noncompliance, CloudWatch ALARM transitions, and selected CloudTrail tampering APIs.
+- Detection normalizer Lambda that minimizes raw finding propagation, maps severity/resource context, and preserves a SHA-256 source-event digest.
+- DynamoDB TTL-based duplicate suppression, source-account allowlisting, and principal-prefix loop suppression.
+- Conservative notify-only routing plus optional read-only EC2 triage through the existing Step Functions workflow.
+- EventBridge retry policies, encrypted SQS dead-letter queue, optional event archive, and replay/operator guidance.
+- Optional CloudWatch Logs `AccessDenied` metric filter/alarm bridge, disabled unless a log group is provided.
+- Event-pattern samples, structural validation, normalizer unit tests, IAM reference policy, Terraform resources, and operator test helper.
+
+### Safety
+
+- Live containment is never started automatically by the detection layer in this release.
+- `detection_default_route` defaults to `notify_only`; automatic `triage` is EC2-only and always uses `dry_run: true`.
+- Unsupported or incomplete resource context falls back to notification rather than guessed remediation.
+- Duplicate suppression and loop controls reduce repeated or self-generated response triggers.
+
+### Validation
+
+- Event patterns and samples are checked as JSON and source/detail-type scoped.
+- Unit tests cover GuardDuty, Security Hub, CloudTrail, duplicate handling, notify-only routing, and dry-run triage.
+- Terraform formatting and validation remain enforced by GitHub Actions and documented for local execution.
 
 ## [2.4.0] — 2026-08-25
 

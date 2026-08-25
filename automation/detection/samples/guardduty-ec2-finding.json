@@ -1,0 +1,22 @@
+{
+  "version": "0",
+  "id": "11111111-2222-3333-4444-555555555555",
+  "detail-type": "GuardDuty Finding",
+  "source": "aws.guardduty",
+  "account": "111122223333",
+  "time": "2026-08-25T12:00:00Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "id": "gd-finding-example",
+    "type": "UnauthorizedAccess:EC2/SSHBruteForce",
+    "title": "Example EC2 suspicious access finding",
+    "severity": 7.2,
+    "resource": {
+      "resourceType": "Instance",
+      "instanceDetails": {
+        "instanceId": "i-0123456789abcdef0"
+      }
+    }
+  }
+}
