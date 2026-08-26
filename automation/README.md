@@ -2,7 +2,7 @@
 
 Phase 3 converts the repository's documented response procedures into modular, deployable, testable, and auditable AWS automation.
 
-**Current automation release:** `v2.5.0 — Detection-to-Response`
+**Current automation release:** `v2.6.0 — Deployment Modules`
 
 ## Capabilities
 
@@ -69,3 +69,7 @@ automation/
 ## Detection-to-response
 
 Phase 3 Commit 5 adds [EventBridge detection routing](detection/README.md). Selected GuardDuty, Security Hub, AWS Config, CloudWatch, and CloudTrail events pass through a normalizer with account checks, duplicate suppression, target retry/DLQ handling, and notify-only or read-only triage routing. Live containment is not automatically triggered.
+
+## Reusable Terraform modules
+
+Phase 3 Commit 6 packages the automation into [reusable Terraform modules](terraform/README.md) with environment examples, state-migration guidance, optional permissions boundaries, and an AWS Organizations event-forwarding pattern.

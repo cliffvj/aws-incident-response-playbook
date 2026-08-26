@@ -169,3 +169,30 @@ variable "cloudwatch_security_log_group_name" {
   default     = null
   nullable    = true
 }
+
+variable "deployment_environment" {
+  type        = string
+  description = "Logical deployment environment used for tags and examples."
+  default     = "lab"
+  validation {
+    condition     = contains(["lab", "development", "controlled-production"], var.deployment_environment)
+    error_message = "deployment_environment must be lab, development, or controlled-production."
+  }
+}
+
+variable "permissions_boundary_arn" {
+  type        = string
+  description = "Optional IAM permissions boundary applied to Terraform-created execution roles."
+  default     = null
+  nullable    = true
+}
+
+variable "kms_deletion_window_days" {
+  type        = number
+  description = "Deletion window for project-managed KMS keys."
+  default     = 7
+  validation {
+    condition     = var.kms_deletion_window_days >= 7 && var.kms_deletion_window_days <= 30
+    error_message = "kms_deletion_window_days must be between 7 and 30."
+  }
+}

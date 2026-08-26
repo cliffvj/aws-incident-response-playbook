@@ -159,16 +159,16 @@ GitHub Actions runs the same internal-link validation for pull requests and push
 
 ## Project status
 
-**Current release:** `v2.5.0 — Detection-to-Response`
+**Current release:** `v2.6.0 — Deployment Modules`
 
-**Current milestone:** Phase 3 Commit 5 complete; next is Terraform productionization and multi-account deployment patterns.
+**Current milestone:** Phase 3 Commit 6 complete; next is the authorized end-to-end Phase 3 capstone lab.
 
 - **Phase 1 — Foundation:** complete
 - **Phase 2 — Documentation professionalization:** complete
-- **Phase 3 — Response automation:** in progress; Commit 5 detection-to-response released as `v2.5.0`
+- **Phase 3 — Response automation:** in progress; Commit 6 deployment modules released as `v2.6.0`
 - **Phase 4 — Deployable labs:** planned
 
-The next milestone is **Phase 3 Commit 6 — Terraform productionization and multi-account patterns**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
+The next milestone is **Phase 3 Commit 7 — Authorized end-to-end incident lab**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing and security
 
@@ -186,3 +186,7 @@ The complete, categorized source catalog is maintained in [docs/references.md](d
 ## License
 
 Released under the [MIT License](LICENSE). AWS service names and trademarks belong to Amazon Web Services, Inc.
+
+### Modular deployment
+
+The Phase 3 automation stack is now available as reusable Terraform modules with lab/development/controlled-production adaptation examples and a documented AWS Organizations event-forwarding pattern. See [`automation/terraform/`](automation/terraform/README.md).

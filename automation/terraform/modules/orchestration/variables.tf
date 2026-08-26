@@ -1,0 +1,10 @@
+variable "source_root" { type = string }
+variable "project_name" { type = string }
+variable "partition" { type = string }
+variable "role_arn" { type = string }
+variable "function_arns" { type = map(string) }
+variable "approval_topic_arn" { type = string }
+variable "log_group_arn" { type = string }
+variable "approval_timeout_seconds" { type = number }
+variable "include_execution_data" { type = bool }
+variable "tags" { type = map(string) }

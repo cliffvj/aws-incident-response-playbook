@@ -1,105 +1,39 @@
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
+module "platform" {
+  source = "./modules/platform"
 
-data "archive_file" "lambda" {
-  for_each    = local.functions
-  type        = "zip"
-  output_path = "${path.module}/${each.key}.zip"
+  source_root = abspath("${path.module}/..")
 
-  source {
-    content  = file("${path.module}/../lambda/${each.key}/app.py")
-    filename = "app.py"
-  }
+  aws_region         = var.aws_region
+  project_name       = var.project_name
+  environment        = var.deployment_environment
+  tags               = local.common_tags
+  log_retention_days = var.log_retention_days
 
-  dynamic "source" {
-    for_each = fileset("${path.module}/../shared/aws_ir", "*.py")
-    content {
-      content  = file("${path.module}/../shared/aws_ir/${source.value}")
-      filename = "aws_ir/${source.value}"
-    }
-  }
-}
+  lambda_timeout_seconds = var.lambda_timeout_seconds
+  lambda_memory_mb       = var.lambda_memory_mb
+  s3_bucket_arns         = var.s3_bucket_arns
+  iam_user_arns          = var.iam_user_arns
 
-resource "aws_kms_key" "sns" {
-  description             = "KMS key for ${var.project_name} incident notifications"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-  tags                    = local.common_tags
-}
+  approval_timeout_seconds              = var.approval_timeout_seconds
+  approval_email_endpoint               = var.approval_email_endpoint
+  step_functions_include_execution_data = var.step_functions_include_execution_data
 
-resource "aws_kms_alias" "sns" {
-  name          = "alias/${var.project_name}-sns"
-  target_key_id = aws_kms_key.sns.key_id
-}
+  ssm_evidence_bucket_name               = var.ssm_evidence_bucket_name
+  ssm_evidence_retention_days            = var.ssm_evidence_retention_days
+  ssm_evidence_noncurrent_retention_days = var.ssm_evidence_noncurrent_retention_days
 
-resource "aws_sns_topic" "incident" {
-  name              = "${var.project_name}-notifications"
-  kms_master_key_id = aws_kms_key.sns.arn
-  tags              = local.common_tags
-}
+  detection_default_route                 = var.detection_default_route
+  detection_allowed_account_ids           = var.detection_allowed_account_ids
+  detection_ignore_principal_arn_prefixes = var.detection_ignore_principal_arn_prefixes
+  detection_dedup_ttl_seconds             = var.detection_dedup_ttl_seconds
+  detection_dlq_retention_seconds         = var.detection_dlq_retention_seconds
+  detection_max_event_age_seconds         = var.detection_max_event_age_seconds
+  detection_max_retry_attempts            = var.detection_max_retry_attempts
+  enable_detection_event_archive          = var.enable_detection_event_archive
+  detection_archive_retention_days        = var.detection_archive_retention_days
+  enable_cloudwatch_alarm_routing         = var.enable_cloudwatch_alarm_routing
+  cloudwatch_security_log_group_name      = var.cloudwatch_security_log_group_name
 
-resource "aws_iam_role" "lambda" {
-  for_each = local.functions
-  name     = "${var.project_name}-${replace(each.key, "_", "-")}-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "lambda.amazonaws.com" }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-
-  tags = local.common_tags
-}
-
-resource "aws_iam_role_policy" "lambda" {
-  for_each = local.functions
-  name     = "${var.project_name}-${replace(each.key, "_", "-")}-policy"
-  role     = aws_iam_role.lambda[each.key].id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = concat(
-      [{
-        Sid      = "Logs"
-        Effect   = "Allow"
-        Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
-        Resource = "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-*:*"
-      }],
-      each.value.statements,
-    )
-  })
-}
-
-resource "aws_cloudwatch_log_group" "lambda" {
-  for_each          = local.functions
-  name              = "/aws/lambda/${var.project_name}-${replace(each.key, "_", "-")}"
-  retention_in_days = var.log_retention_days
-  tags              = local.common_tags
-}
-
-resource "aws_lambda_function" "action" {
-  for_each         = local.functions
-  function_name    = "${var.project_name}-${replace(each.key, "_", "-")}"
-  role             = aws_iam_role.lambda[each.key].arn
-  handler          = "app.handler"
-  runtime          = "python3.13"
-  filename         = data.archive_file.lambda[each.key].output_path
-  source_code_hash = data.archive_file.lambda[each.key].output_base64sha256
-  timeout          = var.lambda_timeout_seconds
-  memory_size      = var.lambda_memory_mb
-
-  environment {
-    variables = {
-      INCIDENT_TOPIC_ARN = aws_sns_topic.incident.arn
-    }
-  }
-
-  depends_on = [
-    aws_cloudwatch_log_group.lambda,
-    aws_iam_role_policy.lambda,
-  ]
-  tags = local.common_tags
+  permissions_boundary_arn = var.permissions_boundary_arn
+  kms_deletion_window_days = var.kms_deletion_window_days
 }

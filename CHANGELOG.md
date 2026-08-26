@@ -8,7 +8,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- Terraform productionization and reusable multi-account deployment patterns for Phase 3 Commit 6.
+- Authorized end-to-end Phase 3 capstone incident lab for Commit 7.
+
+## [2.6.0] — 2026-08-25
+
+### Added
+
+- Reusable Terraform modules for notification, logging, IAM, response actions, orchestration, SSM investigation, event routing, and the composed platform.
+- Lab, development, and controlled-production adaptation examples.
+- AWS Organizations security-account/member-account event-forwarding pattern that deliberately stops short of implicit cross-account containment.
+- Optional IAM permissions-boundary support and configurable KMS deletion windows.
+- S3 backend example, state migration guidance, `moved` blocks for known v2.5.0 resource addresses, import/upgrade/rollback/teardown documentation.
+- Security-oriented Terraform static checks in CI.
+
+### Changed
+
+- The root Terraform deployment now composes `modules/platform` instead of defining the full stack directly.
+- Terraform outputs remain compatible at the root while implementation resources move under modules.
+
+### Safety
+
+- Cross-account event aggregation is documented separately from cross-account response authority.
+- Controlled-production examples are explicitly adaptation templates, not production approval.
+- Existing same-account validation in response actions remains intact.
+
+### Validation
+
+- Python, JSON, action, Step Functions, SSM, event-pattern, Markdown, and Terraform security-oriented static validation remain in CI.
+- `terraform fmt`, `terraform init -backend=false`, `terraform validate`, and a reviewed `terraform plan` are required before apply.
 
 ## [2.5.0] — 2026-08-25
 
