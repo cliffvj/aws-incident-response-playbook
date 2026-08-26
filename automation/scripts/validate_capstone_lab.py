@@ -4,18 +4,29 @@ import json
 import subprocess
 import sys
 import tempfile
+import re
+
 ROOT=Path(__file__).resolve().parents[2]
 LAB=ROOT/'labs'/'phase3-capstone'
 required=[LAB/'README.md',LAB/'troubleshooting.md',LAB/'terraform'/'main.tf',LAB/'terraform'/'variables.tf',LAB/'terraform'/'outputs.tf',LAB/'scripts'/'prepare_lab_inputs.py',LAB/'scripts'/'inject_detection.sh',LAB/'scripts'/'verify_isolation.sh',LAB/'scripts'/'extract_rollback_input.py']
 for p in required:
     if not p.exists(): raise SystemExit(f"missing capstone file: {p.relative_to(ROOT)}")
 text=(LAB/'terraform'/'main.tf').read_text()
-checks={
-    'capstone target must not define inbound security-group rules': 'ingress {' not in text,
-    'EventBridge rule must be lab-scoped': 'source         = ["aws-ir.lab"]' in text,
-    'simulated detail type missing': '"Simulated Security Finding"' in text,
-    'IMDSv2 tokens must be required': 'http_tokens   = "required"' in text,
-    'root EBS must be encrypted': 'encrypted   = true' in text,
+checks = {
+    "capstone target must not define inbound security-group rules":
+        re.search(r"\bingress\s*\{", text) is None,
+
+    "EventBridge rule must be lab-scoped":
+        re.search(r'source\s*=\s*\["aws-ir\.lab"\]', text) is not None,
+
+    "simulated detail type missing":
+        '"Simulated Security Finding"' in text,
+
+    "IMDSv2 tokens must be required":
+        re.search(r'http_tokens\s*=\s*"required"', text) is not None,
+
+    "root EBS must be encrypted":
+        re.search(r"encrypted\s*=\s*true", text) is not None,
 }
 for msg,ok in checks.items():
     if not ok: raise SystemExit(msg)
