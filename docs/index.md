@@ -93,6 +93,7 @@ This index organizes the repository by responder task. During an active incident
 - [Terraform deployment](../automation/terraform/README.md)
 - [Sample events](../automation/samples/README.md)
 - [Testing and validation](../automation/tests/README.md)
+- [Phase 3 authorized end-to-end capstone](../labs/phase3-capstone/README.md)
 
 ## Automation detection integration
 

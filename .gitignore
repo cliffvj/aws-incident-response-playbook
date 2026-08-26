@@ -6,3 +6,11 @@
 *.tfstate*
 evidence/
 query-results/
+# Terraform local/cache files
+.terraform/
+**/.terraform/**
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log

@@ -1,0 +1,11 @@
+aws_region    = "us-east-1"
+project_name  = "aws-ir-capstone"
+instance_type = "t3.micro"
+
+# Supply these through TF_VAR_* using outputs from automation/terraform.
+# detection_normalizer_function_name = "aws-ir-lab-detection-normalizer"
+# ssm_evidence_node_policy_arn       = "arn:aws:iam::111122223333:policy/..."
+
+tags = {
+  Owner = "replace-me"
+}

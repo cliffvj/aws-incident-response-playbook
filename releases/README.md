@@ -4,6 +4,7 @@ This directory preserves release notes inside the repository. GitHub Releases pu
 
 | Version | Name | Status |
 |---|---|---|
+| [v3.0.0](v3.0.0.md) | Automated Response Platform | Released |
 | [v2.6.0](v2.6.0.md) | Deployment Modules | Current |
 | [v2.5.0](v2.5.0.md) | Detection-to-Response | Released |
 | [v2.4.0](v2.4.0.md) | SSM Investigation | Released |
