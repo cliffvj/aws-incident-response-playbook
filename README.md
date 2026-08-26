@@ -41,6 +41,7 @@ Production-inspired AWS incident-response runbooks for study, tabletop exercises
 | Investigate CloudTrail at scale | [Athena query library](queries/cloudtrail-athena.sql) |
 | Use AWS CLI during response | [AWS CLI incident-response reference](cheat-sheets/aws-cli-incident-response.md) |
 | Explore response automation | [Automation framework](automation/README.md) |
+| Run the authorized Phase 3 capstone | [End-to-end incident lab](labs/phase3-capstone/README.md) |
 | Select a Lambda response action | [Response action catalog](automation/docs/response-actions.md) |
 | Orchestrate EC2 triage, containment, approval, and rollback | [Step Functions orchestration](automation/step-functions/README.md) |
 | Investigate EC2 hosts without opening SSH/RDP | [Systems Manager evidence collection](automation/ssm/README.md) |
@@ -159,16 +160,16 @@ GitHub Actions runs the same internal-link validation for pull requests and push
 
 ## Project status
 
-**Current release:** `v2.6.0 — Deployment Modules`
+**Current release:** `v3.0.0 — Automated Response Platform`
 
-**Current milestone:** Phase 3 Commit 6 complete; next is the authorized end-to-end Phase 3 capstone lab.
+**Current milestone:** Phase 3 complete; next is Phase 4 deployable practice labs.
 
 - **Phase 1 — Foundation:** complete
 - **Phase 2 — Documentation professionalization:** complete
-- **Phase 3 — Response automation:** in progress; Commit 6 deployment modules released as `v2.6.0`
-- **Phase 4 — Deployable labs:** planned
+- **Phase 3 — Response automation:** complete at `v3.0.0`
+- **Phase 4 — Deployable practice labs:** next
 
-The next milestone is **Phase 3 Commit 7 — Authorized end-to-end incident lab**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
+The next milestone is **Phase 4 — Deployable practice labs**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing and security
 

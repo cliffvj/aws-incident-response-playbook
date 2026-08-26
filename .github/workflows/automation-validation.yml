@@ -31,13 +31,19 @@ jobs:
       - run: python automation/scripts/validate_ssm_documents.py
       - run: python automation/scripts/validate_event_patterns.py
       - run: python automation/scripts/check_terraform_security.py
+      - run: python automation/scripts/validate_capstone_lab.py
       - run: python automation/scripts/package_lambdas.py
 
   terraform:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory:
+          - automation/terraform
+          - labs/phase3-capstone/terraform
     defaults:
       run:
-        working-directory: automation/terraform
+        working-directory: ${{ matrix.directory }}
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3

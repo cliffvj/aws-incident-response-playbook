@@ -1,7 +1,7 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
-> **Current milestone:** Phase 3 — Response automation
-> **Current release:** `v2.6.0 — Deployment Modules`
+> **Current milestone:** Phase 4 — Deployable practice labs
+> **Current release:** `v3.0.0 — Automated Response Platform`
 > **Roadmap status date:** 2026-08-25
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
@@ -64,8 +64,8 @@ Every phase follows the same core principles:
 |---|---|---|---|
 | Phase 1 | Foundation | Complete | `v1.0.0` |
 | Phase 2 | Documentation professionalization | Complete | `v2.0.0 — Production Documentation` |
-| Phase 3 | Response automation | In progress | Planned completion at `v3.0.0` |
-| Phase 4 | Deployable practice labs | Planned | To be assigned after Phase 3 |
+| Phase 3 | Response automation | Complete | `v3.0.0 — Automated Response Platform` |
+| Phase 4 | Deployable practice labs | Next | To be assigned during Phase 4 |
 | Phase 5 | Detection engineering | Planned | To be assigned after Phase 4 |
 | Phase 6 | Operational maturity | Planned | To be assigned after Phase 5 |
 
@@ -85,6 +85,7 @@ Every phase follows the same core principles:
 | `v2.4.0` | Phase 3 Commit 4: Systems Manager read-only evidence collection and integrity manifests |
 | `v2.5.0` | Phase 3 Commit 5: EventBridge detection-to-response routing with conservative automation controls |
 | `v2.6.0` | Phase 3 Commit 6: reusable Terraform deployment modules and controlled multi-account patterns |
+| `v3.0.0` | Phase 3 Commit 7: authorized end-to-end capstone and automated response platform milestone |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -217,9 +218,8 @@ Transform the foundation into a professionally structured, navigable, source-bac
 
 # Phase 3 — Response automation
 
-**Status:** In progress
-**Current release:** `v2.6.0 — Deployment Modules`
-**Planned completion release:** `v3.0.0`
+**Status:** Complete
+**Completion release:** `v3.0.0 — Automated Response Platform`
 
 ## Objective
 
@@ -389,23 +389,23 @@ A user must be able to deploy the supported automation into an isolated AWS lab 
 
 ## Commit 7 — Authorized end-to-end incident lab
 
-**Status:** Planned
-**Target release:** `v3.0.0 — Automated Response Platform`
+**Status:** Complete
+**Release:** `v3.0.0 — Automated Response Platform`
 
-### Planned scope
+### Delivered scope
 
-- [ ] Add one complete reference lab that validates the Phase 3 automation stack.
-- [ ] Create a controlled EC2 compromise or suspicious-activity scenario.
-- [ ] Generate or inject a supported detection event.
-- [ ] Normalize and route the incident event.
-- [ ] Collect metadata and evidence.
-- [ ] Pause for containment approval.
-- [ ] Isolate the affected workload.
-- [ ] Notify the responder and record structured results.
-- [ ] Demonstrate rollback or trusted recovery.
-- [ ] Add cost estimates, prerequisites, expected results, teardown, and troubleshooting.
-- [ ] Add a validation checklist suitable for portfolio demonstration.
-- [ ] Document known limitations and remaining manual steps.
+- [x] Add one complete reference lab that validates the Phase 3 automation stack.
+- [x] Create a controlled benign EC2 suspicious-activity scenario.
+- [x] Generate and inject a supported lab-only EventBridge detection event.
+- [x] Normalize and conservatively route the incident event.
+- [x] Collect metadata and encrypted read-only SSM evidence.
+- [x] Pause for containment approval.
+- [x] Isolate the affected workload with a ruleless quarantine security group.
+- [x] Notify the responder and record structured workflow results.
+- [x] Demonstrate checksummed-manifest-based rollback.
+- [x] Add cost boundaries, prerequisites, expected results, teardown, and troubleshooting.
+- [x] Add a portfolio validation checklist.
+- [x] Document known limitations and remaining manual steps.
 
 ### Relationship to Phase 4
 
@@ -791,12 +791,8 @@ The project prioritizes transparent, modular, production-inspired patterns that 
 
 # Immediate next milestone
 
-## Phase 3 — Commit 7: Authorized end-to-end incident lab
+## Phase 4 — Deployable practice labs
 
-The final Phase 3 package will deploy a benign EC2 target in an authorized lab, inject a simulated EventBridge finding, collect encrypted SSM evidence, exercise the human-approved Step Functions containment path, verify isolation, demonstrate rollback, and provide complete cost, teardown, troubleshooting, and portfolio-validation guidance.
+Phase 3 now provides a reusable automated response platform and one integrated capstone. Phase 4 will expand this into scenario-specific deployable practice labs that safely reproduce selected AWS security conditions, generate realistic telemetry, execute the corresponding runbook/automation paths, and provide clean deployment and teardown workflows.
 
-Planned release target:
-
-```text
-v3.0.0 — Automated Response Platform
-```
+Phase 4 release numbering and commit sequence will be defined at the start of that phase.

@@ -2,7 +2,7 @@
 
 Phase 3 converts the repository's documented response procedures into modular, deployable, testable, and auditable AWS automation.
 
-**Current automation release:** `v2.6.0 — Deployment Modules`
+**Current automation release:** `v3.0.0 — Automated Response Platform`
 
 ## Capabilities
 
@@ -73,3 +73,7 @@ Phase 3 Commit 5 adds [EventBridge detection routing](detection/README.md). Sele
 ## Reusable Terraform modules
 
 Phase 3 Commit 6 packages the automation into [reusable Terraform modules](terraform/README.md) with environment examples, state-migration guidance, optional permissions boundaries, and an AWS Organizations event-forwarding pattern.
+
+## End-to-end capstone
+
+Phase 3 Commit 7 completes the automation phase with the [authorized capstone lab](../labs/phase3-capstone/README.md). Detection remains conservative, and live containment/rollback retain explicit responder intent and callback approval.

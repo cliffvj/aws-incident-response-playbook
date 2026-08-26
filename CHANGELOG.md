@@ -8,7 +8,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- Authorized end-to-end Phase 3 capstone incident lab for Commit 7.
+- Phase 4 deployable practice labs.
+
+## [3.0.0] — 2026-08-25
+
+### Added
+
+- Authorized Phase 3 end-to-end EC2 incident-response capstone lab.
+- Standalone target-lab Terraform for a benign Amazon Linux target with no inbound security-group rules, encrypted root volume, IMDSv2 enforcement, SSM instance profile, and lab-only EventBridge integration.
+- Deterministic simulated-finding and live-containment input generator.
+- Lab-only `aws-ir.lab` EventBridge finding injection helper.
+- Read-only SSM evidence step before network isolation.
+- Isolation verifier and completed-execution rollback-input extractor using the checksummed Lambda rollback manifest.
+- Capstone safety validator, unit tests, troubleshooting, cost/retention boundaries, teardown instructions, and portfolio checklist.
+
+### Changed
+
+- Phase 3 status is complete at the `v3.0.0` automated response platform milestone.
+- CI validates both platform and capstone Terraform roots.
+
+### Safety
+
+- The capstone uses a harmless marker rather than malware, exploit code, credential theft, persistence, or exfiltration.
+- Detection does not auto-start live containment; containment and rollback retain human callback approval.
+- Host evidence is collected before ruleless network isolation.
+
+### Validation
+
+- Capstone checks require no inbound target SG rules, IMDSv2, encrypted root storage, lab-only EventBridge scoping, and generated-input exclusion from Git.
 
 ## [2.6.0] — 2026-08-25
 
