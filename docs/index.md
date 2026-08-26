@@ -99,3 +99,9 @@ This index organizes the repository by responder task. During an active incident
 - [Detection-to-response routing](../automation/docs/detection-routing.md)
 - [Detection DLQ and replay](../automation/docs/replay-and-dlq.md)
 - [EventBridge detection implementation](../automation/detection/README.md)
+
+## Deployment modules
+
+- [Terraform module guide](../automation/terraform/README.md)
+- [State management and v2.6.0 migration](../automation/terraform/docs/state-management.md)
+- [Multi-account pattern](../automation/terraform/docs/multi-account.md)

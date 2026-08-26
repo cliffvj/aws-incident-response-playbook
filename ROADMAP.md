@@ -1,7 +1,7 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
 > **Current milestone:** Phase 3 — Response automation
-> **Current release:** `v2.5.0 — Detection-to-Response`
+> **Current release:** `v2.6.0 — Deployment Modules`
 > **Roadmap status date:** 2026-08-25
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
@@ -84,6 +84,7 @@ Every phase follows the same core principles:
 | `v2.3.0` | Phase 3 Commit 3: Step Functions incident orchestration and approval boundaries |
 | `v2.4.0` | Phase 3 Commit 4: Systems Manager read-only evidence collection and integrity manifests |
 | `v2.5.0` | Phase 3 Commit 5: EventBridge detection-to-response routing with conservative automation controls |
+| `v2.6.0` | Phase 3 Commit 6: reusable Terraform deployment modules and controlled multi-account patterns |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -217,7 +218,7 @@ Transform the foundation into a professionally structured, navigable, source-bac
 # Phase 3 — Response automation
 
 **Status:** In progress
-**Current release:** `v2.5.0 — Detection-to-Response`
+**Current release:** `v2.6.0 — Deployment Modules`
 **Planned completion release:** `v3.0.0`
 
 ## Objective
@@ -366,21 +367,21 @@ Supported findings must reach the correct response path without triggering uncon
 
 ## Commit 6 — Terraform productionization and multi-account patterns
 
-**Status:** Planned
+**Status:** Complete
 **Target release:** `v2.6.0 — Deployment Modules`
 
 ### Planned scope
 
-- [ ] Convert the initial Terraform scaffold into reusable modules.
-- [ ] Separate Lambda, IAM, logging, notification, orchestration, and event-routing modules.
-- [ ] Add environment examples for lab, development, and controlled production adaptation.
-- [ ] Add encrypted log, SNS, artifact, and evidence-storage options.
-- [ ] Add configurable retention, naming, tagging, and Region settings.
-- [ ] Add multi-account deployment patterns for AWS Organizations environments.
-- [ ] Add delegated security-account and member-account role patterns.
-- [ ] Add permission-boundary and cross-account trust examples.
-- [ ] Add Terraform validation, plan checks, and security-oriented CI checks.
-- [ ] Add upgrade, state-management, import, rollback, and teardown guidance.
+- [x] Convert the initial Terraform scaffold into reusable modules.
+- [x] Separate Lambda, IAM, logging, notification, orchestration, and event-routing modules.
+- [x] Add environment examples for lab, development, and controlled production adaptation.
+- [x] Add encrypted log, SNS, artifact, and evidence-storage options.
+- [x] Add configurable retention, naming, tagging, and Region settings.
+- [x] Add multi-account deployment patterns for AWS Organizations environments.
+- [x] Add delegated security-account and member-account role patterns.
+- [x] Add permission-boundary and cross-account trust examples.
+- [x] Add Terraform validation, plan checks, and security-oriented CI checks.
+- [x] Add upgrade, state-management, import, rollback, and teardown guidance.
 
 ### Completion gate
 
@@ -790,12 +791,12 @@ The project prioritizes transparent, modular, production-inspired patterns that 
 
 # Immediate next milestone
 
-## Phase 3 — Commit 6: Terraform productionization and multi-account patterns
+## Phase 3 — Commit 7: Authorized end-to-end incident lab
 
-The next package will refactor the deployment into reusable Terraform modules, add environment examples and state-migration guidance, introduce controlled AWS Organizations event-forwarding patterns, and strengthen security-oriented Terraform validation.
+The final Phase 3 package will deploy a benign EC2 target in an authorized lab, inject a simulated EventBridge finding, collect encrypted SSM evidence, exercise the human-approved Step Functions containment path, verify isolation, demonstrate rollback, and provide complete cost, teardown, troubleshooting, and portfolio-validation guidance.
 
 Planned release target:
 
 ```text
-v2.6.0 — Deployment Modules
+v3.0.0 — Automated Response Platform
 ```
