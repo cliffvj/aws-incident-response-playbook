@@ -4,8 +4,9 @@ This directory preserves release notes inside the repository. GitHub Releases pu
 
 | Version | Name | Status |
 |---|---|---|
+| [v3.1.0](v3.1.0.md) | EC2 Compromise & Isolation Lab | Current |
 | [v3.0.0](v3.0.0.md) | Automated Response Platform | Released |
-| [v2.6.0](v2.6.0.md) | Deployment Modules | Current |
+| [v2.6.0](v2.6.0.md) | Deployment Modules | Released |
 | [v2.5.0](v2.5.0.md) | Detection-to-Response | Released |
 | [v2.4.0](v2.4.0.md) | SSM Investigation | Released |
 | [v2.3.0](v2.3.0.md) | Orchestrated Response | Released |

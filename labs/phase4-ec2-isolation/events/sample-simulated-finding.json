@@ -1,0 +1,14 @@
+{
+  "source": "aws-ir.lab",
+  "detail-type": "Simulated Security Finding",
+  "account": "111122223333",
+  "region": "us-east-1",
+  "detail": {
+    "finding_id": "phase4-ec2-isolation-simulated-001",
+    "severity": "HIGH",
+    "title": "Authorized Phase 4 EC2 compromise simulation",
+    "instance_id": "i-0123456789abcdef0",
+    "simulation": true,
+    "scenario": "phase4-ec2-isolation"
+  }
+}

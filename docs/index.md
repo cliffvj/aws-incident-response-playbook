@@ -94,6 +94,7 @@ This index organizes the repository by responder task. During an active incident
 - [Sample events](../automation/samples/README.md)
 - [Testing and validation](../automation/tests/README.md)
 - [Phase 3 authorized end-to-end capstone](../labs/phase3-capstone/README.md)
+- [Phase 4 EC2 compromise investigation and isolation lab](../labs/phase4-ec2-isolation/README.md)
 
 ## Automation detection integration
 

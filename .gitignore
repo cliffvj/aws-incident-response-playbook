@@ -3,14 +3,28 @@
 .idea/
 *.log
 .env
-*.tfstate*
-evidence/
-query-results/
-# Terraform local/cache files
+
+# Python local artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Terraform local/cache/state artifacts
 .terraform/
 **/.terraform/**
+.terraform.lock.hcl
+**/.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 *.tfplan
 crash.log
 crash.*.log
+
+# Local incident/lab output
+evidence/
+query-results/
+labs/**/generated/*
+!labs/**/generated/.gitignore

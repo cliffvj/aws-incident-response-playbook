@@ -1,8 +1,8 @@
 # AWS Incident Response Playbook — Complete Project Roadmap
 
-> **Current milestone:** Phase 4 — Deployable practice labs
-> **Current release:** `v3.0.0 — Automated Response Platform`
-> **Roadmap status date:** 2026-08-25
+> **Current milestone:** Phase 4 Commit 1 — EC2 compromise investigation and isolation lab
+> **Current release:** `v3.1.0 — EC2 Compromise & Isolation Lab`
+> **Roadmap status date:** 2026-08-27
 
 This roadmap defines the planned evolution of the **AWS Incident Response Playbook** from a scenario-based documentation repository into a deployable, testable, and operationally mature AWS incident-response engineering project.
 
@@ -65,7 +65,7 @@ Every phase follows the same core principles:
 | Phase 1 | Foundation | Complete | `v1.0.0` |
 | Phase 2 | Documentation professionalization | Complete | `v2.0.0 — Production Documentation` |
 | Phase 3 | Response automation | Complete | `v3.0.0 — Automated Response Platform` |
-| Phase 4 | Deployable practice labs | Next | To be assigned during Phase 4 |
+| Phase 4 | Deployable practice labs | In progress | `v4.0.0` planned phase completion |
 | Phase 5 | Detection engineering | Planned | To be assigned after Phase 4 |
 | Phase 6 | Operational maturity | Planned | To be assigned after Phase 5 |
 
@@ -86,6 +86,7 @@ Every phase follows the same core principles:
 | `v2.5.0` | Phase 3 Commit 5: EventBridge detection-to-response routing with conservative automation controls |
 | `v2.6.0` | Phase 3 Commit 6: reusable Terraform deployment modules and controlled multi-account patterns |
 | `v3.0.0` | Phase 3 Commit 7: authorized end-to-end capstone and automated response platform milestone |
+| `v3.1.0` | Phase 4 Commit 1: EC2 compromise investigation and isolation practice lab |
 
 Detailed release history is maintained in [CHANGELOG.md](CHANGELOG.md) and [releases/](releases/README.md).
 
@@ -428,26 +429,40 @@ Phase 3 is complete when:
 
 # Phase 4 — Deployable practice labs
 
-**Status:** Planned
+**Status:** In progress
+**Current release:** `v3.1.0 — EC2 Compromise & Isolation Lab`
 
 ## Objective
 
-Build repeatable, isolated, cost-conscious labs that let users practice the runbooks and automation without touching production environments.
+Build repeatable, isolated, cost-conscious labs that let users deploy AWS resources, generate safe security conditions, investigate real telemetry, exercise Phase 3 automation, verify outcomes, and tear the environment down without touching production.
 
-## Planned lab catalog
+## Commit sequence
 
-- [ ] EC2 compromise and quarantine lab.
-- [ ] Public S3 exposure and remediation lab.
-- [ ] IAM credential compromise investigation lab.
-- [ ] Backdoor IAM identity and persistence lab.
-- [ ] Publicly accessible RDS remediation lab.
-- [ ] CloudTrail and Athena investigation lab.
-- [ ] AWS Config compliance-remediation lab.
-- [ ] Security-group exposure and rollback lab.
-- [ ] Systems Manager evidence-collection lab.
-- [ ] Step Functions orchestration lab.
-- [ ] Detection-to-response integration lab.
-- [ ] Full incident-response capstone exercise.
+| Commit | Release | Practice focus | Status |
+|---|---|---|---|
+| 1 | `v3.1.0` | EC2 compromise investigation and isolation | Complete in this milestone |
+| 2 | `v3.2.0` | IAM credential compromise | Planned |
+| 3 | `v3.3.0` | S3 public exposure and data-access investigation | Planned |
+| 4 | `v3.4.0` | GuardDuty detection-to-response | Planned |
+| 5 | `v3.5.0` | Security Hub / AWS Config remediation | Planned |
+| 6 | `v3.6.0` | Multi-service incident exercise | Planned |
+| 7 | `v4.0.0` | Phase 4 SOC-style capstone | Planned |
+
+## Commit 1 — EC2 compromise investigation and isolation
+
+**Release:** `v3.1.0 — EC2 Compromise & Isolation Lab`
+
+- [x] Deploy a benign Amazon Linux 2023 target with Terraform.
+- [x] Require IMDSv2 and encrypted EBS.
+- [x] Use a no-ingress security group and Systems Manager instead of SSH.
+- [x] Generate a harmless suspicious-activity marker through SSM.
+- [x] Generate a deterministic `aws-ir.lab` EventBridge finding and incident ID.
+- [x] Route the finding through the existing Phase 3 normalizer without automatic live containment.
+- [x] Collect read-only SSM host evidence before isolation.
+- [x] Exercise EBS snapshot preservation and approved Step Functions quarantine.
+- [x] Verify every target ENI uses only the incident quarantine group.
+- [x] Restore original security groups through checksummed rollback data.
+- [x] Add expected-results, troubleshooting, architecture, interview-review, unit, CI, and structural-safety validation.
 
 ## Required structure for every lab
 
@@ -464,6 +479,7 @@ Each lab must include:
 - Expected evidence and outputs.
 - Rollback and teardown instructions.
 - Troubleshooting guidance.
+- Interview/review prompts where useful.
 - Explicit production-use warnings.
 
 ## Phase 4 exit criteria
@@ -472,7 +488,8 @@ Each lab must include:
 - Costs, cleanup, and destructive effects are clearly documented.
 - Expected outputs are deterministic enough for validation.
 - Every lab maps to one or more repository runbooks and automation components.
-- The capstone demonstrates a complete incident lifecycle.
+- Scenario simulation remains benign and explicitly authorized.
+- The Phase 4 capstone demonstrates a complete SOC-style incident lifecycle across multiple AWS services.
 
 ---
 

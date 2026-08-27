@@ -4,15 +4,20 @@ on:
   pull_request:
     paths:
       - "automation/**"
+      - "labs/**"
       - ".github/workflows/automation-validation.yml"
   push:
     branches: [main]
     paths:
       - "automation/**"
+      - "labs/**"
       - ".github/workflows/automation-validation.yml"
 
 permissions:
   contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   python:
@@ -23,7 +28,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: python -m pip install -r automation/requirements-dev.txt
-      - run: python -m compileall -q automation
+      - run: python -m compileall -q automation labs
       - run: python -m unittest discover -s automation/tests -p 'test_*.py'
       - run: python automation/scripts/validate_json.py
       - run: python automation/scripts/check_action_contracts.py
@@ -32,6 +37,7 @@ jobs:
       - run: python automation/scripts/validate_event_patterns.py
       - run: python automation/scripts/check_terraform_security.py
       - run: python automation/scripts/validate_capstone_lab.py
+      - run: python labs/phase4-ec2-isolation/validation/validate_lab.py
       - run: python automation/scripts/package_lambdas.py
 
   terraform:
@@ -41,6 +47,7 @@ jobs:
         directory:
           - automation/terraform
           - labs/phase3-capstone/terraform
+          - labs/phase4-ec2-isolation/terraform
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
