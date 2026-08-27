@@ -107,6 +107,7 @@ flowchart LR
 | Query and command references | [Athena SQL](queries/cloudtrail-athena.sql) · [AWS CLI](cheat-sheets/aws-cli-incident-response.md) · [Authoritative references](docs/references.md) |
 | Templates | [Incident record](templates/incident-record.md) · [Evidence log](templates/evidence-log.csv) |
 | Automation | [Framework](automation/README.md) · [Response actions](automation/docs/response-actions.md) · [Step Functions orchestration](automation/step-functions/README.md) · [SSM investigation](automation/ssm/README.md) · [Lambda actions](automation/lambda/README.md) · [Rollback manifests](automation/docs/rollback-manifests.md) · [Terraform deployment](automation/terraform/README.md) |
+| Practice labs | [Phase 3 capstone](labs/phase3-capstone/README.md) · [Phase 4 EC2 compromise & isolation](labs/phase4-ec2-isolation/README.md) |
 
 ## Phase 3 detection-to-response
 
@@ -131,7 +132,7 @@ aws-incident-response-playbook/
 ├── releases/      # Versioned release notes and release-history index
 ├── .github/       # Pull-request and documentation-validation workflow
 ├── automation/    # Response actions, Step Functions orchestration, and SSM investigation
-└── labs/          # Planned isolated hands-on exercises
+└── labs/          # Authorized Phase 3 capstone and Phase 4 deployable practice labs
 ```
 
 ## Safe use of examples
@@ -160,16 +161,16 @@ GitHub Actions runs the same internal-link validation for pull requests and push
 
 ## Project status
 
-**Current release:** `v3.0.0 — Automated Response Platform`
+**Current release:** `v3.1.0 — EC2 Compromise & Isolation Lab`
 
-**Current milestone:** Phase 3 complete; next is Phase 4 deployable practice labs.
+**Current milestone:** Phase 4 in progress — first deployable practice lab released.
 
 - **Phase 1 — Foundation:** complete
 - **Phase 2 — Documentation professionalization:** complete
 - **Phase 3 — Response automation:** complete at `v3.0.0`
-- **Phase 4 — Deployable practice labs:** next
+- **Phase 4 — Deployable practice labs:** in progress at `v3.1.0`
 
-The next milestone is **Phase 4 — Deployable practice labs**. See [ROADMAP.md](ROADMAP.md) for milestones and scope. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
+Start with the [Phase 4 EC2 compromise investigation and isolation lab](labs/phase4-ec2-isolation/README.md). See [ROADMAP.md](ROADMAP.md) for the remaining Phase 4 sequence. Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing and security
 

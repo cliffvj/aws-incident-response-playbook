@@ -1,0 +1,11 @@
+aws_region    = "us-east-1"
+project_name  = "aws-ir-p4-ec2"
+instance_type = "t3.micro"
+
+# Supply these from the deployed Phase 3 platform, preferably with TF_VAR_ environment variables:
+# detection_normalizer_function_name = "aws-ir-lab-normalize-security-event"
+# ssm_evidence_node_policy_arn       = "arn:aws:iam::111122223333:policy/aws-ir-lab-ssm-evidence-node"
+
+tags = {
+  Owner = "YOUR_NAME_OR_TEAM"
+}

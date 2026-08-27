@@ -8,7 +8,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Planned
 
-- Phase 4 deployable practice labs.
+- Phase 4 Commit 2 — IAM credential compromise practice lab (`v3.2.0`).
+
+## [3.1.0] — 2026-08-27
+
+### Added
+
+- First Phase 4 scenario-specific deployable practice lab for EC2 compromise investigation and isolation.
+- Terraform target environment with Amazon Linux 2023, encrypted gp3 root storage, required IMDSv2, no inbound security-group rules, Systems Manager role/profile, and Phase 3 evidence-policy integration.
+- Lab-only EventBridge rule scoped to the existing `aws-ir.lab` simulated-finding contract.
+- Cross-platform Python helpers for deterministic scenario preparation, EventBridge finding injection, benign SSM marker creation, target safety verification, and quarantine verification.
+- Expected-results checklist, architecture/trust-boundary guide, troubleshooting guide, and interview review prompts.
+- Phase 4 structural/safety validator and unit tests.
+
+### Changed
+
+- Automation CI now triggers for `labs/**`, compiles lab Python, validates the Phase 4 lab, and validates the new Terraform root.
+- Root `.gitignore` now excludes nested Terraform caches/state, generated lab output, virtual environments, and Python bytecode/cache files.
+- Project status and roadmap now mark Phase 4 as in progress with the `v3.1.0` through `v4.0.0` commit sequence.
+
+### Safety
+
+- The suspicious condition is a marker file created through authorized SSM Run Command; no malware, exploit, persistence, credential theft, destructive payload, or exfiltration is used.
+- Detection remains notify-only by default and never directly authorizes live containment.
+- Host evidence is collected before ruleless network isolation.
+- Live containment and rollback continue to require explicit Step Functions approval callbacks.
+
+### Validation
+
+- Unit tests validate deterministic incident IDs, explicit containment inputs, event-simulation flags, and Terraform safety invariants.
+- Structural validation enforces no inbound rules/SSH, IMDSv2, encryption, Systems Manager integration, and lab-only event scoping.
+- CI validates the Phase 3 platform, Phase 3 capstone, and Phase 4 EC2 lab Terraform roots.
 
 ## [3.0.0] — 2026-08-25
 
